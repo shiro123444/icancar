@@ -1,0 +1,13 @@
+{
+  "calibrated": false,
+  "roi": [0.0, 0.2, 1.0, 0.9],
+  "yellow": {"lower": [18, 70, 70], "upper": [42, 255, 255]},
+  "blue": {"lower": [90, 60, 35], "upper": [135, 255, 255]},
+  "lane_center_x": 0.5,
+  "min_lane_width": 0.2,
+  "min_valid_row_fraction": 0.35,
+  "boundary_margin": 0.01,
+  "min_component_area": 0.001,
+  "min_component_height": 0.06,
+  "max_components": 12
+}

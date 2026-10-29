@@ -39,6 +39,7 @@ def main():
     try:
         import rclpy
         from rclpy.node import Node
+        from rclpy.clock import Clock, ClockType
         from geometry_msgs.msg import Twist, TwistStamped
         from std_msgs.msg import String
     except ImportError as error:
@@ -47,10 +48,11 @@ def main():
     class CandidateNode(Node):
         def __init__(self):
             super().__init__('visual_race_steering_candidate')
+            self.steady_clock = Clock(clock_type=ClockType.STEADY_TIME)
             message_type = TwistStamped if args.output_type == 'twist-stamped' else Twist
             self.pub = self.create_publisher(message_type, args.output_topic, 1) if args.activate else None
             self.create_subscription(String, args.input_topic, self.on_preview, 1)
-            self.create_timer(1 / args.hz, self.tick)
+            self.create_timer(1 / args.hz, self.tick, clock=self.steady_clock)
         def on_preview(self, msg):
             try:
                 value = json.loads(msg.data, parse_constant=lambda _: (_ for _ in ()).throw(ValueError('invalid JSON')))

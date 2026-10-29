@@ -57,6 +57,7 @@ def main():
     try:
         import rclpy
         from rclpy.node import Node
+        from rclpy.clock import Clock, ClockType
         from rclpy.qos import QoSProfile, HistoryPolicy, ReliabilityPolicy, DurabilityPolicy
         from sensor_msgs.msg import CompressedImage
         from std_msgs.msg import String
@@ -66,13 +67,14 @@ def main():
     class Preview(Node):
         def __init__(self):
             super().__init__('visual_race_steering_preview')
+            self.steady_clock = Clock(clock_type=ClockType.STEADY_TIME)
             self.pub = self.create_publisher(String, args.output_topic, 1)
             sensor_qos = QoSProfile(depth=1, history=HistoryPolicy.KEEP_LAST,
                                     reliability=ReliabilityPolicy.BEST_EFFORT,
                                     durability=DurabilityPolicy.VOLATILE)
             self.create_subscription(CompressedImage, args.camera_topic, self.frame, sensor_qos)
-            self.create_timer(.02, self.publish_result)
-            self.create_timer(.25, self.check_timeout)
+            self.create_timer(.02, self.publish_result, clock=self.steady_clock)
+            self.create_timer(.25, self.check_timeout, clock=self.steady_clock)
             self.last_good = None
             self.last_stamp_ns = 0
             self.reject_through_ns = 0

@@ -52,18 +52,26 @@
    camera.textContent=v.camera_age_s!==null && v.camera_age_s<3 ? `相机 ${v.camera_age_s}s` : '相机 —';
    const model=v.model && v.model_age_s!==null && v.model_age_s<5 ? v.model : null;
    const labels={crossing:'人行道',start:'起点线'};
-   const modelText=model?(model.detections.length?'模型 · '+model.detections.map(x=>`${labels[x.label]||x.label} ${x.score.toFixed(2)}`).join(' · '):'模型 · 未识别'):'模型 —';
+   const modelText=model?(model.valid===false?'模型 · 不可用':model.detections.length?'模型 · '+model.detections.map(x=>`${labels[x.label]||x.label} ${x.score.toFixed(2)}`).join(' · '):'模型 · 未识别'):'模型 —';
    document.getElementById('robotModel').textContent=modelText;
    document.getElementById('camModel').textContent=modelText;
    document.getElementById('percModel').textContent=modelText;
    const steering=v.steering && v.steering.valid===true && v.steering_age_s!==null && v.steering_age_s<3 && Number.isFinite(v.steering.steering) ? v.steering.steering : null;
    const processing=steering!==null && Number.isFinite(v.steering.processing_ms) && v.steering.processing_ms>=0 ? ` · 处理 ${Math.round(v.steering.processing_ms)}ms` : '';
-   const steeringText=steering===null?'循迹预览 —':`循迹预览 ${steering>=0?'+':''}${steering.toFixed(3)}${processing}`;
+   const frameAge=steering!==null && Number.isFinite(v.steering.image_age_ms) && Number.isFinite(v.steering_age_s) ? ` · 帧龄 ${Math.round(Math.max(0,v.steering.image_age_ms)+v.steering_age_s*1000)}ms` : '';
+   const replaced=steering!==null && Number.isInteger(v.steering.frames_replaced) ? ` · 覆盖 ${v.steering.frames_replaced} 帧` : '';
+   const steeringText=steering===null?'循迹预览 —':`循迹预览 ${steering>=0?'+':''}${steering.toFixed(3)}${processing}${frameAge}${replaced}`;
    for(const id of ['robotSteering','camSteering','percSteering'])document.getElementById(id).textContent=steeringText;
    const control=v.control && v.control_age_s!==null && v.control_age_s<3 ? v.control : null;
+   const barrier=v.barrier && v.barrier_age_s!==null && v.barrier_age_s<3 ? v.barrier : null;
+   document.getElementById('robotBarrier').textContent=barrier?(barrier.calibrated===false?`挡板 ${barrier.boxes.length} · 待标定`:barrier.valid?`挡板 ${barrier.boxes.length} 个`:'挡板 · 等待识别'):'挡板 —';
+   const avoidance=v.avoidance && v.avoidance_age_s!==null && v.avoidance_age_s<3 ? v.avoidance : null;
+   const avoidanceLabels={uncalibrated:'待标定',input_unavailable:'等待数据',lane_stop:'停车',lane_geometry_invalid:'车道待确认',confirming_clear:'确认通道',follow_lane:'循迹',barrier_too_close:'距离过近',no_safe_gap:'停车',avoid_barrier:'绕行'};
+   document.getElementById('robotAvoidance').textContent=avoidance?`避障 · ${avoidanceLabels[avoidance.reason]||'等待'}`:'避障 —';
    const controlLabels={waiting:'等待',disabled:'未启用',ready:'就绪',estop_latched_or_stale:'急停待复位',odometry_stale:'里程计超时',odometry_limit:'里程计超限',stop_not_confirmed:'停车未确认',safety_mission_or_command_stop:'停车'};
    const controlElement=document.getElementById('robotControl');
-   if(controlElement)controlElement.textContent=control?`控制 · ${controlLabels[control.reason]||'等待'}`:'控制 —';
+   const safetyAge=control && Number.isFinite(control.safety_age_s) ? ` · 安全信号 ${Math.round((control.safety_age_s+v.control_age_s)*1000)}ms` : '';
+   if(controlElement)controlElement.textContent=control?`控制 · ${controlLabels[control.reason]||'等待'}${safetyAge}`:'控制 —';
    showCalibration(v.calibration && v.calibration_age_s!==null && v.calibration_age_s<3 ? v.calibration : null);
    showMission(v.mission && v.mission_age_s!==null && v.mission_age_s<3 ? v.mission : null);
    const cameraLive=v.camera_age_s!==null && v.camera_age_s<3;
@@ -82,6 +90,7 @@
    document.getElementById('robotModel').textContent='模型 —';document.getElementById('camModel').textContent='模型 —';document.getElementById('percModel').textContent='模型 —'
    for(const id of ['robotSteering','camSteering','percSteering'])document.getElementById(id).textContent='循迹预览 —';
    const controlElement=document.getElementById('robotControl');if(controlElement)controlElement.textContent='控制 —';
+   document.getElementById('robotBarrier').textContent='挡板 —';document.getElementById('robotAvoidance').textContent='避障 —';
    showCalibration(null)
  }finally{polling=false}}
  poll();setInterval(poll,1500);

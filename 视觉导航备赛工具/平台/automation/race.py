@@ -90,11 +90,11 @@ class Race:
     def frame(self, now, line, crosswalk):
         self._now(now)
         self._check(now)
-        if not isinstance(line, bool) or not isinstance(crosswalk, bool):
-            raise ValueError('detection must be boolean')
+        if not isinstance(line, bool) or (crosswalk is not None and not isinstance(crosswalk, bool)):
+            raise ValueError('detection must be boolean or absent')
         self.frame_at = now
         line_edge = self.line.observe(line)
-        crosswalk_edge = self.crosswalk.observe(crosswalk)
+        crosswalk_edge = self.crosswalk.observe(crosswalk) if crosswalk is not None else False
         if line_edge and self.phase == 'armed':
             self.phase, self.started = 'running', now
             self.events.append({'type': 'start', 'at': now})
@@ -105,11 +105,31 @@ class Race:
                 self.phase, self.finished = 'finished', now
                 self.events.append({'type': 'finish', 'at': now})
         if crosswalk_edge and self.phase == 'running':
-            self.phase, self.stationary_since = 'yield', None
-            self.announcement_id += 1
-            self.announcement_ok = False
-            self.events.append({'type': 'announce', 'id': self.announcement_id,
-                                'text': '人行道前停车礼让行人', 'at': now})
+            self._start_yield(now)
+        return self.status(now)
+
+    def crosswalk_frame(self, now, present):
+        """Observe one independent crosswalk-model result, not a repeated camera frame."""
+        self._now(now)
+        self._check(now)
+        if not isinstance(present, bool):
+            raise ValueError('crosswalk detection must be boolean')
+        if self.crosswalk.observe(present) and self.phase == 'running':
+            self._start_yield(now)
+        return self.status(now)
+
+    def _start_yield(self, now):
+        self.phase, self.stationary_since = 'yield', None
+        self.announcement_id += 1
+        self.announcement_ok = False
+        self.events.append({'type': 'announce', 'id': self.announcement_id,
+                            'text': '人行道前停车礼让行人', 'at': now})
+
+    def fail(self, now, reason):
+        self._now(now)
+        if self.phase in ('armed', 'running', 'yield'):
+            self.phase, self.reason = 'fault', reason
+            self.events.append({'type': 'fault', 'reason': reason, 'at': now})
         return self.status(now)
 
     def odom(self, now, vx, vy, angular):

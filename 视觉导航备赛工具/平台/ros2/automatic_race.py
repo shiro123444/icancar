@@ -12,6 +12,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from automation.detector import detect, validate_config
+from automation.model_crosswalk import ModelCrosswalk, validate_model_config
 from automation.race import Race
 from automation.realtime import EventWriter
 import numpy as np
@@ -59,6 +60,10 @@ def main():
     p.add_argument('--camera-type', required=True, choices=('compressed', 'raw'))
     p.add_argument('--odom-topic', required=True)
     p.add_argument('--config', required=True)
+    p.add_argument('--crosswalk-source', choices=('stripe', 'model'), default='stripe',
+                   help='斑马线使用条带检测或原厂模型结果')
+    p.add_argument('--model-topic', default='/visual_race/model_detections')
+    p.add_argument('--model-config', default='', help='模型阈值、区域与时效配置 JSON')
     p.add_argument('--status-topic', default='/visual_race/status')
     p.add_argument('--speech-topic', default='/visual_race/speech')
     p.add_argument('--speech-ack-topic', default='/visual_race/speech_ack')
@@ -70,9 +75,16 @@ def main():
         p.error('max-source-age 必须是正有限数')
     with open(args.config, encoding='utf-8') as f:
         config = validate_config(json.load(f))
+    model_guard = None
+    if args.crosswalk_source == 'model':
+        if not args.model_config:
+            p.error('模型模式需要 --model-config')
+        with open(args.model_config, encoding='utf-8') as f:
+            model_guard = ModelCrosswalk(validate_model_config(json.load(f)))
     try:
         import rclpy
         from rclpy.node import Node
+        from rclpy.clock import Clock, ClockType
         from rclpy.qos import qos_profile_sensor_data
         from sensor_msgs.msg import Image, CompressedImage
         from nav_msgs.msg import Odometry
@@ -84,6 +96,7 @@ def main():
     class Controller(Node):
         def __init__(self):
             super().__init__('visual_race_controller')
+            self.steady_clock = Clock(clock_type=ClockType.STEADY_TIME)
             self.race = Race(timeout=args.timeout)
             self.session = uuid.uuid4().hex
             self.event_path = self.new_event_path()
@@ -97,11 +110,13 @@ def main():
             self.create_subscription(CompressedImage if args.camera_type == 'compressed' else Image,
                                      args.camera_topic, self.camera, qos_profile_sensor_data)
             self.create_subscription(Odometry, args.odom_topic, self.odom, qos_profile_sensor_data)
+            if model_guard is not None:
+                self.create_subscription(String, args.model_topic, self.model, 1)
             self.create_subscription(String, args.speech_ack_topic, self.ack, 10)
             self.create_service(Trigger, '/visual_race/arm', self.arm)
             self.create_service(Trigger, '/visual_race/stop', self.stop)
             self.create_service(Trigger, '/visual_race/reset', self.reset)
-            self.create_timer(0.1, self.update)
+            self.create_timer(0.1, self.update, clock=self.steady_clock)
 
         def new_event_path(self):
             if not args.events_dir:
@@ -143,7 +158,8 @@ def main():
                     raise ValueError('图像源时间戳过期或无效')
                 detected = detect(decode(msg, args.camera_type), config)
                 self.last_detection = detected
-                self.race.frame(time.monotonic(), detected['start_line']['detected'], detected['crosswalk']['detected'])
+                crosswalk = detected['crosswalk']['detected'] if model_guard is None else None
+                self.race.frame(time.monotonic(), detected['start_line']['detected'], crosswalk)
             except Exception as e:
                 self.get_logger().warning('图像读取或检测失败: ' + str(e), throttle_duration_sec=3.0)
 
@@ -155,6 +171,20 @@ def main():
                 self.race.odom(time.monotonic(), v.linear.x, v.linear.y, v.angular.z)
             except (ValueError, AttributeError) as e:
                 self.get_logger().warning('里程计反馈无效: ' + str(e), throttle_duration_sec=3.0)
+
+        def model(self, msg):
+            now, ros_now = time.monotonic(), self.get_clock().now().nanoseconds
+            try:
+                if len(msg.data) > 100_000:
+                    raise ValueError('模型结果过大')
+                value = json.loads(msg.data, parse_constant=lambda _: (_ for _ in ()).throw(ValueError('invalid JSON')))
+            except (TypeError, ValueError):
+                value = None
+            observed = model_guard.update(value, now, ros_now)
+            if observed is not None:
+                self.race.crosswalk_frame(now, observed)
+            elif not model_guard.available(now, ros_now):
+                self.race.fail(now, 'crosswalk_model_unavailable')
 
         def ack(self, msg):
             try:
@@ -173,6 +203,10 @@ def main():
                     raise ValueError('事件记录不可用，请检查后重新启动')
                 if not config['calibrated']:
                     raise ValueError('先用现场图像标定配置')
+                if model_guard is not None and not model_guard.config['calibrated']:
+                    raise ValueError('先标定人行道模型的区域和阈值')
+                if model_guard is not None and not model_guard.available(time.monotonic(), self.get_clock().now().nanoseconds):
+                    raise ValueError('人行道模型结果未就绪或已过期')
                 self.race.arm(time.monotonic())
                 response.success, response.message = True, '任务已准备'
             except ValueError as e:
@@ -202,10 +236,14 @@ def main():
 
         def update(self):
             now = time.monotonic()
+            if model_guard is not None and not model_guard.available(now, self.get_clock().now().nanoseconds):
+                self.race.fail(now, 'crosswalk_model_unavailable')
             if self.event_writer and self.event_writer.status()['error']:
                 self.fail_event_writer()
             state = self.race.tick(now)
-            state.update({'session': self.session, 'calibrated': config['calibrated'],
+            ready_config = config['calibrated'] and (model_guard is None or model_guard.config['calibrated'])
+            state.update({'session': self.session, 'calibrated': ready_config,
+                          'crosswalk_source': args.crosswalk_source,
                           'detections': self.last_detection, 'finish_announcement_ok': self.finish_ack})
             self.send(self.pub, state)
             # Requests are repeated until acknowledged; the player deduplicates them.

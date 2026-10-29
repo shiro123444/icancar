@@ -1,0 +1,43 @@
+{
+  "checks": {
+    "started": true,
+    "safety_stop": true,
+    "safety_resumed": true,
+    "estop_stop": true,
+    "estop_held": true,
+    "reset_resumed": true,
+    "stale_stop": true,
+    "base_link_before_drop": true,
+    "base_link_stop": true,
+    "base_link_resumed": true
+  },
+  "all_passed": true,
+  "observations": {
+    "started": 34,
+    "safety_stop": 14,
+    "safety_resumed": 13,
+    "estop_stop": 10,
+    "estop_held": 15,
+    "reset_resumed": 17,
+    "stale_stop": 25,
+    "base_link_before_drop": 13,
+    "base_link_stop": 11,
+    "base_link_resumed": 19
+  },
+  "prediction_age_ms_p50": 67.036,
+  "prediction_age_ms_p95": 123.42,
+  "worker": {
+    "submitted": 45,
+    "processed": 26,
+    "input_replaced": 18,
+    "result_replaced": 0,
+    "errors": 0,
+    "pending": 0,
+    "result_pending": 0,
+    "closed": true
+  },
+  "worker_closed": true,
+  "physical_motor_commands": false,
+  "source": "historical images and simulated feedback",
+  "note": "In-process replay, not a ROS 2 or physical-vehicle test."
+}

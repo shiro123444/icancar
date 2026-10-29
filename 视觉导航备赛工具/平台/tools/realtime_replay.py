@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 import torch
-from automation.command import CommandGate
+from automation.command import CommandGate, VelocityBuffer
 from automation.feedback import EmergencyLatch, FeedbackGuard
 from automation.realtime import LatestWorker
 from automation.steering_candidate import SteeringCandidate, fresh_frame
@@ -52,19 +52,21 @@ def run(model_path, dataset):
     gate = CommandGate(.05, .4, .5, enabled=True, max_frame_age=.4)
     feedback, emergency = FeedbackGuard(), EmergencyLatch(.5)
     system = MotionSupervisor(gate, feedback, emergency)
+    base = VelocityBuffer(.05, .4, timeout=.3, max_source_age=.3)
     checks = {'started':False,'safety_stop':True,'safety_resumed':False,
-              'estop_stop':True,'estop_held':True,'reset_resumed':False,'stale_stop':True}
+              'estop_stop':True,'estop_held':True,'reset_resumed':False,'stale_stop':True,
+              'base_link_before_drop':False,'base_link_stop':True,'base_link_resumed':False}
     seen = {key:0 for key in checks}
     prediction_age_ms = []
     frame_index = 0
     reset_after_estop = False
-    start = next_frame = next_command = time.monotonic()
+    start = next_frame = next_command = next_base_command = time.monotonic()
     worker.start()
     try:
         while True:
             now = time.monotonic()
             elapsed = now - start
-            if elapsed >= 4.4:
+            if elapsed >= 6.2:
                 break
             ros_now = time.time_ns()
             safety_ok = not (1.2 <= elapsed < 1.6)
@@ -73,7 +75,7 @@ def run(model_path, dataset):
             gate.set_safety(safety_ok, now)
             emergency.update(estop_active, now)
             feedback.update(0, 0, 0, ros_now, now, ros_now)
-            if elapsed < 3.2 and now >= next_frame:
+            if (elapsed < 3.2 or elapsed >= 4.4) and now >= next_frame:
                 worker.submit((ros_now, images[frame_index % len(images)]))
                 frame_index += 1
                 next_frame = now + .1
@@ -98,7 +100,14 @@ def run(model_path, dataset):
                     gate.set_command(*command, now, candidate.frame_stamp_ns, ros_now)
                 next_command = now + .1
             output = system.output(now, ros_now)
-            moving = output is not None and math.hypot(output[0], output[1]) > .001
+            # Simulate the last, timestamp-checked buffer in the serial adapter.
+            # A safety stop is delivered immediately; motion is delivered at 10 Hz.
+            if output is not None and not 5.0 <= elapsed < 5.6:
+                if now >= next_base_command or output == (0.0, 0.0, 0.0):
+                    base.update(*output, now, ros_now, ros_now)
+                    next_base_command = now + .1
+            base_output = base.output(now, ros_now)
+            moving = math.hypot(base_output[0], base_output[1]) > .001
             if .35 <= elapsed < 1.2:
                 seen['started'] += 1; checks['started'] |= moving
             elif 1.25 <= elapsed < 1.6:
@@ -113,6 +122,12 @@ def run(model_path, dataset):
                 seen['reset_resumed'] += 1; checks['reset_resumed'] |= moving
             elif 3.8 <= elapsed < 4.4:
                 seen['stale_stop'] += 1; checks['stale_stop'] &= not moving
+            elif 4.7 <= elapsed < 5.0:
+                seen['base_link_before_drop'] += 1; checks['base_link_before_drop'] |= moving
+            elif 5.35 <= elapsed < 5.6:
+                seen['base_link_stop'] += 1; checks['base_link_stop'] &= not moving
+            elif 5.75 <= elapsed < 6.2:
+                seen['base_link_resumed'] += 1; checks['base_link_resumed'] |= moving
             time.sleep(.02)
     finally:
         closed = worker.close()

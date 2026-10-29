@@ -7,7 +7,7 @@ from automation.race import Race
 from automation.command import CommandGate
 from automation.demo import demo
 from automation.voice_protocol import VoiceBox, firmware_reply, HANDSHAKE, STOP_PROMPT
-from automation.base_protocol import FrameDecoder, measured_velocity, velocity_frame
+from automation.base_protocol import FrameDecoder, measured_sensors, measured_velocity, velocity_frame
 from ros2.camera_node import read_calibration
 from tools.ros2_camera_calibrate import signature, novel
 import struct
@@ -143,6 +143,13 @@ class CommandTests(unittest.TestCase):
         gate.set_state(None, 1.2)
         self.assertEqual(gate.output(1.2), (0, 0, 0))
 
+    def test_extreme_components_cannot_generate_nonfinite_output(self):
+        gate = CommandGate(.3, .4, enabled=True)
+        gate.set_state({'calibrated': True, 'phase': 'running', 'action': 'follow_lane'}, 1)
+        gate.set_safety(True, 1)
+        gate.set_command(1.7e308, 1.7e308, 0, 1)
+        self.assertEqual(gate.output(1), (0, 0, 0))
+
 
 class VoiceTests(unittest.TestCase):
     def test_only_matching_handshake_and_vendor_stop_are_used(self):
@@ -172,6 +179,8 @@ class BaseProtocolTests(unittest.TestCase):
         data=bytearray(32)
         data[:3]=bytes([0xab,0xcd,32])
         data[16:22]=struct.pack('>hhh',125,-20,7)
+        data[22:26]=struct.pack('>hh',1240,423)
+        data[26:30]=bytes([1,0,2,1])
         data[-1]=sum(data[:-1])&255
         broken=bytearray(data)
         broken[-1]^=1
@@ -180,6 +189,9 @@ class BaseProtocolTests(unittest.TestCase):
         frames=decoder.feed(bytes(data[10:])+broken+data)
         self.assertEqual(len(frames),2)
         self.assertEqual(measured_velocity(frames[0]),(.125,-.02,.007))
+        self.assertEqual(measured_sensors(frames[0]),{'battery_vendor_value':12.4,
+                         'sonar_vendor_value':42.3, 'infrared_vendor_values':[1,0,2,1]})
+        with self.assertRaises(ValueError):measured_sensors(bytes(broken))
 
 
 class CameraCalibrationTests(unittest.TestCase):

@@ -37,8 +37,15 @@ class MotionSupervisor:
         gate.clear_command()
         return True, '已复位，等待新的控制指令'
 
-    def diagnostics(self, now):
+    def diagnostics(self, now, ros_now_ns=None):
         feedback = self.feedback
+        def elapsed(at):
+            return None if at is None else round(max(0.0, now-at), 3)
+        stamp = self.gate.frame_stamp_ns
+        frame_age = None
+        if stamp is not None and isinstance(ros_now_ns, int) and not isinstance(ros_now_ns, bool):
+            frame_age = round(max(0.0, (ros_now_ns-stamp)/1_000_000_000), 3)
         return {'source':'control_gate', 'active':self.gate.enabled, 'reason':self.last_reason,
                 'estop_latched':self.emergency.latched, 'feedback_fault':feedback.latched_reason,
-                'feedback_age_s':None if feedback.at is None else round(max(0.0, now-feedback.at), 3)}
+                'feedback_age_s':elapsed(feedback.at), 'safety_age_s':elapsed(self.gate.safety_at),
+                'command_age_s':elapsed(self.gate.command_at), 'frame_age_s':frame_age}

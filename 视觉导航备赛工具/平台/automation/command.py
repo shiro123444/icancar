@@ -4,6 +4,67 @@ from automation.race import number
 from automation.steering_candidate import fresh_frame
 
 
+class VelocityBuffer:
+    """Bounded, expiring input for the vehicle-side serial adapter.
+
+    Stamped commands must use the same ROS clock as the consumer. Receiving an
+    old or repeated command never extends the watchdog. This does not replace a
+    watchdog in the motor controller or a physical emergency stop.
+    """
+    def __init__(self, max_linear, max_angular, timeout, max_source_age=.3, stamped=True):
+        if (not all(number(x) and x > 0 for x in (max_linear, max_angular, timeout, max_source_age))
+                or not isinstance(stamped, bool)):
+            raise ValueError('velocity buffer limits must be positive and finite')
+        self.max_linear, self.max_angular = float(max_linear), float(max_angular)
+        self.timeout, self.max_source_age, self.stamped = float(timeout), float(max_source_age), stamped
+        self.values, self.received_at, self.stamp_ns = None, None, None
+        self.latest_stamp_ns = None
+
+    def clear(self):
+        self.values, self.received_at, self.stamp_ns = None, None, None
+
+    def source_fresh(self, stamp_ns, ros_now_ns):
+        if (not isinstance(stamp_ns, int) or isinstance(stamp_ns, bool) or not 0 < stamp_ns < 2**63
+                or not isinstance(ros_now_ns, int) or isinstance(ros_now_ns, bool)
+                or not 0 < ros_now_ns < 2**63):
+            return False
+        age = (ros_now_ns - stamp_ns) / 1_000_000_000
+        return -.02 <= age <= self.max_source_age
+
+    def update(self, vx, vy, angular, now, stamp_ns=None, ros_now_ns=None):
+        if not all(number(v) for v in (vx, vy, angular, now)):
+            self.clear()
+            return False
+        if self.stamped:
+            if not self.source_fresh(stamp_ns, ros_now_ns):
+                self.clear()
+                return False
+            if self.latest_stamp_ns is not None and stamp_ns <= self.latest_stamp_ns:
+                # A late stop is still safe to honor; no replay refreshes the timer.
+                if vx == vy == angular == 0:
+                    self.clear()
+                return False
+        speed = math.hypot(vx, vy)
+        if not math.isfinite(speed):
+            self.clear()
+            return False
+        if speed > self.max_linear:
+            scale = self.max_linear / speed
+            vx, vy = vx * scale, vy * scale
+        angular = max(-self.max_angular, min(self.max_angular, angular))
+        self.values, self.received_at, self.stamp_ns = (float(vx), float(vy), float(angular)), float(now), stamp_ns
+        if self.stamped:
+            self.latest_stamp_ns = stamp_ns
+        return True
+
+    def output(self, now, ros_now_ns=None):
+        if (not number(now) or self.received_at is None or not 0 <= now - self.received_at <= self.timeout
+                or (self.stamped and not self.source_fresh(self.stamp_ns, ros_now_ns))):
+            self.clear()
+            return (0.0, 0.0, 0.0)
+        return self.values
+
+
 class CommandGate:
     def __init__(self, max_linear, max_angular, timeout=0.5, enabled=False, max_frame_age=None):
         if (not all(number(v) and v > 0 for v in (max_linear, max_angular, timeout))
@@ -24,7 +85,7 @@ class CommandGate:
         self.state, self.state_at = state, float(now)
 
     def set_command(self, vx, vy, angular, now, frame_stamp_ns=None, ros_now_ns=None):
-        if (not all(number(v) for v in (vx, vy, angular, now)) or
+        if (not all(number(v) for v in (vx, vy, angular, now)) or not math.isfinite(math.hypot(vx, vy)) or
                 (self.max_frame_age is not None and not fresh_frame(frame_stamp_ns, ros_now_ns, self.max_frame_age))):
             self.command, self.command_at = None, None
             self.frame_stamp_ns = None
@@ -62,6 +123,7 @@ class CommandGate:
         vx, vy, angular = self.command
         speed = math.hypot(vx, vy)
         if speed > self.max_linear:
-            vx, vy = vx * self.max_linear / speed, vy * self.max_linear / speed
+            scale = self.max_linear / speed
+            vx, vy = vx * scale, vy * scale
         angular = max(-self.max_angular, min(self.max_angular, angular))
         return vx, vy, angular

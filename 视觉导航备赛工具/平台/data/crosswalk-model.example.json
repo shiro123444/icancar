@@ -1,0 +1,7 @@
+{
+  "calibrated": false,
+  "min_confidence": 0.5,
+  "roi": [0.0, 0.0, 1.0, 1.0],
+  "max_source_age_s": 0.8,
+  "max_gap_s": 1.0
+}

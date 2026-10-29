@@ -28,6 +28,10 @@ class Store:
         self.steering_at = None
         self.control = None
         self.control_at = None
+        self.barrier = None
+        self.barrier_at = None
+        self.avoidance = None
+        self.avoidance_at = None
     def set_pose(self, pose):
         with self.lock:
             self.pose = pose
@@ -59,6 +63,14 @@ class Store:
         with self.lock:
             self.control = value
             self.control_at = self.clock()
+    def set_barrier(self, value):
+        with self.lock:
+            self.barrier = value
+            self.barrier_at = self.clock()
+    def set_avoidance(self, value):
+        with self.lock:
+            self.avoidance = value
+            self.avoidance_at = self.clock()
     def status(self):
         with self.lock:
             now = self.clock()
@@ -70,7 +82,9 @@ class Store:
                     'model':self.model,'model_age_s':None if self.model_at is None else round(now-self.model_at,2),
                     'calibration':self.calibration,'calibration_age_s':None if self.calibration_at is None else round(now-self.calibration_at,2),
                     'steering':self.steering,'steering_age_s':None if self.steering_at is None else round(now-self.steering_at,2),
-                    'control':self.control,'control_age_s':None if self.control_at is None else round(now-self.control_at,2)}
+                    'control':self.control,'control_age_s':None if self.control_at is None else round(now-self.control_at,2),
+                    'barrier':self.barrier,'barrier_age_s':None if self.barrier_at is None else round(now-self.barrier_at,2),
+                    'avoidance':self.avoidance,'avoidance_age_s':None if self.avoidance_at is None else round(now-self.avoidance_at,2)}
     def image(self):
         with self.lock:
             if self.frame_at is None or self.clock() - self.frame_at > 3: return None
@@ -103,6 +117,8 @@ def parse_model(raw):
     def reject_constant(value):raise ValueError('non-finite JSON value')
     value=json.loads(raw,parse_constant=reject_constant)
     if not isinstance(value,dict) or value.get('source')!='openvino_race':raise ValueError('invalid model source')
+    if value.get('valid') is False:return {'source':'openvino_race','valid':False,'detections':[]}
+    if 'valid' in value and value['valid'] is not True:raise ValueError('invalid model status')
     width,height=value.get('width'),value.get('height')
     if not all(isinstance(v,int) and not isinstance(v,bool) and 0<v<=4096 for v in (width,height)):
         raise ValueError('invalid model image size')
@@ -119,7 +135,7 @@ def parse_model(raw):
         if not isinstance(box,list) or len(box)!=4 or any(not isinstance(v,(int,float)) or isinstance(v,bool) or not math.isfinite(v) for v in box):
             raise ValueError('invalid detection box')
         if not 0<=box[0]<box[2]<=width or not 0<=box[1]<box[3]<=height:raise ValueError('box outside image')
-    return {'source':'openvino_race','width':width,'height':height,'inference_ms':inference,'detections':detections}
+    return {'source':'openvino_race','valid':True,'width':width,'height':height,'inference_ms':inference,'detections':detections}
 
 def parse_calibration(raw):
     if len(raw)>4096:raise ValueError('calibration message too large')
@@ -173,12 +189,44 @@ def parse_control(raw):
             or not isinstance(value.get('active'),bool) or value.get('reason') not in reasons
             or not isinstance(value.get('estop_latched'),bool)):
         raise ValueError('invalid control diagnostics')
-    fault,age=value.get('feedback_fault'),value.get('feedback_age_s')
+    fault=value.get('feedback_fault')
     if fault is not None and fault not in ('odometry_limit','stop_not_confirmed'):
         raise ValueError('invalid feedback fault')
-    if age is not None and (not isinstance(age,(int,float)) or isinstance(age,bool) or not math.isfinite(age) or age < 0):
-        raise ValueError('invalid feedback age')
-    return {key:value.get(key) for key in ('source','active','reason','estop_latched','feedback_fault','feedback_age_s')}
+    ages=('feedback_age_s','safety_age_s','command_age_s','frame_age_s')
+    for name in ages:
+        age=value.get(name)
+        if age is not None and (not isinstance(age,(int,float)) or isinstance(age,bool) or not math.isfinite(age) or age < 0):
+            raise ValueError('invalid control age')
+    return {key:value.get(key) for key in ('source','active','reason','estop_latched','feedback_fault')+ages}
+
+def parse_barrier(raw):
+    if len(raw)>100_000:raise ValueError('barrier observation too large')
+    def reject_constant(value):raise ValueError('non-finite JSON value')
+    value=json.loads(raw,parse_constant=reject_constant)
+    if (not isinstance(value,dict) or value.get('source')!='barrier_detector'
+            or not isinstance(value.get('valid'),bool)):
+        raise ValueError('invalid barrier observation')
+    calibrated=value.get('calibrated')
+    if calibrated is not None and not isinstance(calibrated,bool):raise ValueError('invalid barrier calibration')
+    boxes=value.get('boxes',[])
+    if not isinstance(boxes,list) or len(boxes)>100:raise ValueError('invalid barrier boxes')
+    for item in boxes:
+        box=item.get('box') if isinstance(item,dict) else None
+        if (not isinstance(box,list) or len(box)!=4
+                or any(not isinstance(x,(int,float)) or isinstance(x,bool) or not math.isfinite(x) for x in box)
+                or not 0<=box[0]<box[2]<=1 or not 0<=box[1]<box[3]<=1):
+            raise ValueError('invalid barrier box')
+    return {'source':'barrier_detector','valid':value['valid'],'calibrated':calibrated,'boxes':boxes}
+
+def parse_avoidance(raw):
+    if len(raw)>4096:raise ValueError('avoidance diagnostics too large')
+    value=json.loads(raw)
+    reasons=('uncalibrated','input_unavailable','lane_stop','lane_geometry_invalid','confirming_clear',
+             'follow_lane','barrier_too_close','no_safe_gap','avoid_barrier')
+    if (not isinstance(value,dict) or value.get('source')!='barrier_avoidance'
+            or value.get('reason') not in reasons or not isinstance(value.get('calibrated'),bool)):
+        raise ValueError('invalid avoidance diagnostics')
+    return {'source':'barrier_avoidance','reason':value['reason'],'calibrated':value['calibrated']}
 
 def handler_for(store):
     class Handler(BaseHTTPRequestHandler):
@@ -205,6 +253,8 @@ def parse_args():
     p.add_argument('--calibration-topic',default='',help='相机标定状态话题')
     p.add_argument('--steering-topic',default='',help='循迹模型只读预览话题')
     p.add_argument('--control-topic',default='',help='速度仲裁只读诊断话题')
+    p.add_argument('--barrier-topic',default='',help='挡板识别只读结果话题')
+    p.add_argument('--avoidance-topic',default='',help='挡板避障只读诊断话题')
     return p.parse_args()
 
 def main():
@@ -240,6 +290,10 @@ def main():
                 self.create_subscription(String,args.steering_topic,self.steering,10)
             if args.control_topic:
                 self.create_subscription(String,args.control_topic,self.control,10)
+            if args.barrier_topic:
+                self.create_subscription(String,args.barrier_topic,self.barrier,1)
+            if args.avoidance_topic:
+                self.create_subscription(String,args.avoidance_topic,self.avoidance,1)
             self.create_timer(2.0,self.update_graph)
             self.update_graph()
         def update_graph(self):
@@ -277,6 +331,12 @@ def main():
             except (ValueError,TypeError): pass
         def control(self,msg):
             try: store.set_control(parse_control(msg.data))
+            except (ValueError,TypeError): pass
+        def barrier(self,msg):
+            try: store.set_barrier(parse_barrier(msg.data))
+            except (ValueError,TypeError): pass
+        def avoidance(self,msg):
+            try: store.set_avoidance(parse_avoidance(msg.data))
             except (ValueError,TypeError): pass
     rclpy.init()
     node=Bridge()

@@ -22,6 +22,8 @@ def main():
     p.add_argument('--timeout', type=float, default=0.5)
     p.add_argument('--input-type', choices=('twist-stamped', 'twist'), default='twist-stamped',
                    help='候选指令类型；无时间戳类型只适用于兼容旧程序')
+    p.add_argument('--output-type', choices=('twist-stamped', 'twist'), default='twist-stamped',
+                   help='发往底盘的指令类型；无时间戳类型仅用于旧驱动兼容')
     p.add_argument('--max-frame-age', type=float, default=.4, help='带时间戳的候选速度最大图像年龄')
     p.add_argument('--feedback-topic', default='/raw_odom', help='实测里程计话题')
     p.add_argument('--feedback-timeout', type=float, default=.5)
@@ -48,6 +50,7 @@ def main():
     try:
         import rclpy
         from rclpy.node import Node
+        from rclpy.clock import Clock, ClockType
         from rclpy.qos import QoSProfile, HistoryPolicy, ReliabilityPolicy, DurabilityPolicy
         from geometry_msgs.msg import Twist, TwistStamped
         from nav_msgs.msg import Odometry
@@ -59,7 +62,9 @@ def main():
     class GateNode(Node):
         def __init__(self):
             super().__init__('visual_race_command_gate')
-            self.publisher = self.create_publisher(Twist, args.output_topic, 1) if args.activate else None
+            self.steady_clock = Clock(clock_type=ClockType.STEADY_TIME)
+            output_type = TwistStamped if args.output_type == 'twist-stamped' else Twist
+            self.publisher = self.create_publisher(output_type, args.output_topic, 1) if args.activate else None
             self.diagnostics = self.create_publisher(String, args.diagnostics_topic, 1)
             self.create_subscription(TwistStamped if args.input_type == 'twist-stamped' else Twist, args.input_topic, self.command, 1)
             self.create_subscription(String, args.status_topic, self.state, 1)
@@ -70,8 +75,8 @@ def main():
                                     durability=DurabilityPolicy.VOLATILE)
             self.create_subscription(Odometry, args.feedback_topic, self.odometry, sensor_qos)
             self.create_service(Trigger, args.reset_service, self.reset)
-            self.create_timer(0.1, self.update)
-            self.create_timer(0.5, self.report)
+            self.create_timer(0.1, self.update, clock=self.steady_clock)
+            self.create_timer(0.5, self.report, clock=self.steady_clock)
         def command(self, msg):
             if args.input_type == 'twist-stamped':
                 stamp = msg.header.stamp.sec * 1_000_000_000 + msg.header.stamp.nanosec
@@ -103,6 +108,8 @@ def main():
         def reset(self, request, response):
             now, ros_now = time.monotonic(), self.get_clock().now().nanoseconds
             response.success, response.message = supervisor.reset(now, ros_now)
+            if response.success:
+                self.publish_stop_if_needed()
             return response
         def compute(self):
             now, ros_now = time.monotonic(), self.get_clock().now().nanoseconds
@@ -114,14 +121,20 @@ def main():
         def publish(self, values):
             if self.publisher is None or values is None:
                 return
-            msg = Twist()
-            msg.linear.x, msg.linear.y, msg.angular.z = values
+            if args.output_type == 'twist-stamped':
+                msg = TwistStamped()
+                msg.header.stamp = self.get_clock().now().to_msg()
+                msg.header.frame_id = 'base_link'
+                twist = msg.twist
+            else:
+                msg = twist = Twist()
+            twist.linear.x, twist.linear.y, twist.angular.z = values
             self.publisher.publish(msg)
         def update(self):
             self.publish(self.compute())
         def report(self):
             now = time.monotonic()
-            data = supervisor.diagnostics(now)
+            data = supervisor.diagnostics(now, self.get_clock().now().nanoseconds)
             self.diagnostics.publish(String(data=json.dumps(data, ensure_ascii=False, allow_nan=False)))
 
     rclpy.init()

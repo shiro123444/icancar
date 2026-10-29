@@ -33,10 +33,22 @@ class FrameDecoder:
         return frames
 
 
-def measured_velocity(frame):
+def _validate_sensor_frame(frame):
     if len(frame)<31 or frame[:2]!=HEADER or frame[2]!=len(frame) or sum(frame[:-1]) & 255 != frame[-1]:
         raise ValueError('invalid base sensor frame')
+
+
+def measured_velocity(frame):
+    _validate_sensor_frame(frame)
     return tuple(value/1000.0 for value in struct.unpack_from('>hhh',frame,16))
+
+
+def measured_sensors(frame):
+    """Read vendor fields without interpreting the unverified sonar value as a distance."""
+    _validate_sensor_frame(frame)
+    battery, sonar = struct.unpack_from('>hh', frame, 22)
+    return {'battery_vendor_value': battery / 100.0, 'sonar_vendor_value': sonar / 10.0,
+            'infrared_vendor_values': list(frame[26:30])}
 
 
 def velocity_frame(vx,vy,yaw):

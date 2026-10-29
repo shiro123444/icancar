@@ -29,6 +29,8 @@ class BridgeTest(unittest.TestCase):
               'detections':[{'label':'crossing','score':.8,'box':[10,20,100,150]}]}
         value=m.parse_model(json.dumps(data));store=m.Store();store.set_model(value)
         self.assertEqual(store.status()['model']['detections'][0]['label'],'crossing')
+        self.assertFalse(m.parse_model('{"source":"openvino_race","valid":false}')['valid'])
+        with self.assertRaises(ValueError):m.parse_model('{"source":"openvino_race","valid":"yes"}')
         data['detections'][0]['box'][2]=900
         with self.assertRaises(ValueError):m.parse_model(json.dumps(data))
     def test_calibration_status_validation(self):
@@ -62,9 +64,22 @@ class BridgeTest(unittest.TestCase):
 
     def test_control_diagnostics_are_validated_and_expire_in_status(self):
         now=[10.0];store=m.Store(lambda:now[0])
-        value=m.parse_control('{"source":"control_gate","active":true,"reason":"estop_latched_or_stale","estop_latched":true,"feedback_fault":null,"feedback_age_s":0.1}')
+        value=m.parse_control('{"source":"control_gate","active":true,"reason":"estop_latched_or_stale","estop_latched":true,"feedback_fault":null,"feedback_age_s":0.1,"safety_age_s":0.2,"command_age_s":0.1,"frame_age_s":0.3}')
         store.set_control(value);now[0]=11.0
         self.assertEqual(store.status()['control']['reason'],'estop_latched_or_stale')
+        self.assertEqual(store.status()['control']['safety_age_s'],.2)
         self.assertEqual(store.status()['control_age_s'],1.0)
         with self.assertRaises(ValueError):m.parse_control('{"source":"control_gate","active":true,"reason":"ready","estop_latched":true,"feedback_age_s":NaN}')
+        with self.assertRaises(ValueError):m.parse_control('{"source":"control_gate","active":true,"reason":"ready","estop_latched":true,"safety_age_s":-1}')
+
+    def test_barrier_and_avoidance_diagnostics(self):
+        now=[10.0];store=m.Store(lambda:now[0])
+        value=m.parse_barrier('{"source":"barrier_detector","valid":false,"calibrated":false,"boxes":[{"box":[0.1,0.2,0.4,0.7]}]}')
+        store.set_barrier(value)
+        store.set_avoidance(m.parse_avoidance('{"source":"barrier_avoidance","reason":"uncalibrated","calibrated":false}'))
+        now[0]=11.0
+        self.assertEqual(len(store.status()['barrier']['boxes']),1)
+        self.assertEqual(store.status()['avoidance_age_s'],1.0)
+        with self.assertRaises(ValueError):m.parse_barrier('{"source":"barrier_detector","valid":true,"boxes":[{"box":[0,0,2,1]}]}')
+        with self.assertRaises(ValueError):m.parse_avoidance('{"source":"barrier_avoidance","reason":"invented","calibrated":true}')
 if __name__=='__main__':unittest.main()

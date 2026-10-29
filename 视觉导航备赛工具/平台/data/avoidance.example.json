@@ -1,0 +1,16 @@
+{
+  "calibrated": false,
+  "vehicle_center_x": 0.5,
+  "min_gap_width": 0.22,
+  "padding": 0.06,
+  "avoid_bottom": 0.42,
+  "stop_bottom": 0.88,
+  "turn_gain": 1.0,
+  "turn_sign": -1,
+  "max_angular": 0.35,
+  "max_speed": 0.05,
+  "avoid_speed": 0.04,
+  "timeout": 0.5,
+  "max_source_age": 0.4,
+  "clear_frames": 3
+}

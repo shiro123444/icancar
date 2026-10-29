@@ -1,0 +1,8 @@
+{
+  "calibrated": false,
+  "stop_m": 0.25,
+  "release_m": 0.40,
+  "timeout": 0.5,
+  "max_source_age": 0.5,
+  "clear_frames": 3
+}

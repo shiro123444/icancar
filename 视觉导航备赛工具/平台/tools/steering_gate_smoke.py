@@ -25,11 +25,13 @@ def main():
     import rclpy
     from rclpy.node import Node
     from rclpy.qos import qos_profile_sensor_data
-    from geometry_msgs.msg import Twist
+    from geometry_msgs.msg import TwistStamped
     from nav_msgs.msg import Odometry
     from sensor_msgs.msg import CompressedImage
     from std_msgs.msg import Bool, String
     from std_srvs.srv import Trigger
+    sys.path.insert(0, str(root))
+    from automation.command import VelocityBuffer
 
     topics = {'image': '/visual_race/trial/image', 'preview': '/visual_race/trial/preview',
               'candidate': '/visual_race/trial/candidate', 'status': '/visual_race/trial/status',
@@ -55,7 +57,8 @@ def main():
                 self.reset_client = self.create_client(Trigger, topics['reset'])
                 self.reset_future = None
                 self.initial_reset_done = False
-                self.create_subscription(Twist, topics['output'], self.on_output, 10)
+                self.base_buffer = VelocityBuffer(.05, .4, .3, .3)
+                self.create_subscription(TwistStamped, topics['output'], self.on_output, 1)
                 self.create_timer(.1, self.tick)
                 self.stage, self.changed_at = 'warmup', time.monotonic()
                 self.seen = {'forward': False, 'safety_stop': False, 'resumed': False,
@@ -94,7 +97,15 @@ def main():
             def transition(self, name):
                 self.stage, self.changed_at = name, time.monotonic()
             def on_output(self, msg):
-                x, y, w = msg.linear.x, msg.linear.y, msg.angular.z
+                now = time.monotonic()
+                stamp = msg.header.stamp.sec * 1_000_000_000 + msg.header.stamp.nanosec
+                raw = msg.twist
+                if (not all(math.isfinite(v) for v in (raw.linear.x, raw.linear.y, raw.angular.z))
+                        or math.hypot(raw.linear.x, raw.linear.y) > .050001 or abs(raw.angular.z) > .400001):
+                    raise ValueError('隔离测试仲裁输出超限')
+                self.base_buffer.update(raw.linear.x, raw.linear.y, raw.angular.z,
+                                        now, stamp, self.get_clock().now().nanoseconds)
+                x, y, w = self.base_buffer.output(now, self.get_clock().now().nanoseconds)
                 if not all(math.isfinite(v) for v in (x,y,w)) or math.hypot(x,y) > .050001 or abs(w) > .400001:
                     raise ValueError('隔离测试输出超限')
                 moving = abs(x) > .001
@@ -123,8 +134,9 @@ def main():
                     self.transition('stale_stop')
                 elif self.stage == 'stale_stop' and not moving and time.monotonic() - self.changed_at > .6:
                     self.seen['stale_stop'] = True
-        node = Trial()
+        node = None
         try:
+            node = Trial()
             deadline = time.monotonic() + 30
             while time.monotonic() < deadline and not node.seen['stale_stop'] and all(c.poll() is None for c in children):
                 rclpy.spin_once(node, timeout_sec=.2)
@@ -133,7 +145,8 @@ def main():
                 raise SystemExit('隔离回放失败，阶段 ' + node.stage + ': ' + log.read()[-2500:])
             print(json.dumps({'checks': node.seen, 'domain':78, 'physical_motor_commands':False}, ensure_ascii=False))
         finally:
-            node.destroy_node()
+            if node is not None:
+                node.destroy_node()
             rclpy.shutdown()
             for child in children:
                 child.terminate()
