@@ -1,0 +1,28 @@
+{
+  "physical_motor_test": true,
+  "setup": "ground_clearance_operator_at_power",
+  "test": "forward-stop",
+  "requested_speed_mps": 0.08,
+  "requested_duration_s": 3.0,
+  "startup_deadline_s": 8,
+  "stop_feedback_confirmed": false,
+  "firmware_timeout_observed": false,
+  "startup_sonar_cm": [
+    135,
+    175
+  ],
+  "motion_sonar_cm": [
+    75,
+    175
+  ],
+  "emergency_sonar_cm": 30,
+  "near_confirmation_frames": 2,
+  "near_confirmation_deadline_s": 0.05,
+  "error": "fresh stationary feedback and 0.8 s stable clearance required",
+  "samples": 398,
+  "peak_linear_feedback": 0.0,
+  "nonzero_commands": 0,
+  "range_rejections": 26,
+  "last_sonar_cm": 144.0,
+  "transient_sonar_dips": 0
+}

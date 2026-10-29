@@ -1,0 +1,15 @@
+{
+  "physical_motor_test": true,
+  "setup": "ground_clearance_operator_at_power",
+  "test": "forward-stop",
+  "requested_speed_mps": 0.05,
+  "requested_duration_s": 0.6,
+  "stop_feedback_confirmed": true,
+  "firmware_timeout_observed": false,
+  "stop_feedback_delay_s": 0.398,
+  "samples": 169,
+  "peak_linear_feedback": 0.041,
+  "nonzero_commands": 6,
+  "range_rejections": 4,
+  "last_sonar_cm": 53.0
+}

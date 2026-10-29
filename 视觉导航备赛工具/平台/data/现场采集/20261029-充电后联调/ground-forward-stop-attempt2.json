@@ -1,0 +1,14 @@
+{
+  "physical_motor_test": true,
+  "setup": "ground_clearance_operator_at_power",
+  "test": "forward-stop",
+  "stop_feedback_confirmed": true,
+  "firmware_timeout_observed": false,
+  "inconclusive": "wheel movement was not observed in encoder feedback",
+  "stop_feedback_delay_s": 0.053,
+  "samples": 68,
+  "peak_linear_feedback": 0.0,
+  "nonzero_commands": 4,
+  "range_rejections": 0,
+  "last_sonar_cm": 55.0
+}

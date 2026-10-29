@@ -1,0 +1,29 @@
+{
+  "physical_motor_test": true,
+  "setup": "ground_clearance_operator_at_power",
+  "test": "forward-stop",
+  "requested_speed_mps": 0.08,
+  "requested_duration_s": 3.0,
+  "startup_deadline_s": 8,
+  "stop_feedback_confirmed": false,
+  "firmware_timeout_observed": false,
+  "startup_sonar_cm": [
+    135,
+    175
+  ],
+  "motion_sonar_cm": [
+    75,
+    175
+  ],
+  "emergency_sonar_cm": 30,
+  "near_confirmation_frames": 2,
+  "near_confirmation_deadline_s": 0.05,
+  "error": "ground test requires the verified upright board at 75..175 cm sonar distance; observed 61.0 cm",
+  "motion_elapsed_s": 1.206,
+  "samples": 106,
+  "peak_linear_feedback": 0.1032,
+  "nonzero_commands": 12,
+  "range_rejections": 10,
+  "last_sonar_cm": 61.0,
+  "transient_sonar_dips": 8
+}

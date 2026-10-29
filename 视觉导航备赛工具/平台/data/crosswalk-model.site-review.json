@@ -1,0 +1,18 @@
+{
+  "calibrated": false,
+  "min_confidence": 0.30,
+  "roi": [0.08, 0.25, 0.98, 0.85],
+  "max_source_age_s": 0.8,
+  "max_gap_s": 1.0,
+  "class_order": ["start", "crossing"],
+  "model_sha256": "178cea7d38f12e929c995f55d4116cf7550a3f076e3f1b7210163d6bab7fd31b",
+  "require_stripes": true,
+  "stripe_geometry": {
+    "white_threshold": 0.75,
+    "min_coverage": 0.35,
+    "min_band_fraction": 0.02,
+    "min_bands": 3,
+    "max_bands": 15
+  },
+  "review_note": "Experimental site mapping for this exact model. Source YAML and checkpoint say crossing/start, but observed single start stripe produced class 0 and crosswalks at approximately 30 and 50 cm produced class 1. Requires independent validation before motion."
+}

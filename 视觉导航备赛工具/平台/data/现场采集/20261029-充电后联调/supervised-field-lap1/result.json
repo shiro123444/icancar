@@ -1,0 +1,27 @@
+{
+  "source": "supervised_visual_test",
+  "active": false,
+  "phase": "fault",
+  "reason": "wheel_feedback_limit",
+  "supervised": true,
+  "calibrated": false,
+  "laps": 0,
+  "crosswalk_stops": 1,
+  "distance_m": 6.042,
+  "elapsed_seconds": 41.15,
+  "frame_age_s": 0.006,
+  "feedback_age_s": 0.038,
+  "command": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "announcement_ack": true,
+  "announcement_content_verified": false,
+  "session": "948b08a885ff4615b72cdde542f8db37",
+  "physical_motor_test": true,
+  "nonzero_publications": 735,
+  "stop_feedback_confirmed": true,
+  "sonar_mode": "diagnostic_only",
+  "scope": "operator-supervised visual trial; not official race timing"
+}

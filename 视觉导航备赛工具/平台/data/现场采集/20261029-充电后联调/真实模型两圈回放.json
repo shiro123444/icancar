@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-29",
+  "ros_domain_id": 78,
+  "ros_localhost_only": true,
+  "two_laps": true,
+  "crosswalk_stops": 2,
+  "model_loss_stop": true,
+  "recorded_site_images": true,
+  "real_openvino_model": true,
+  "simulated_model": false,
+  "simulated_odometry_and_speech_ack": true,
+  "physical_commands": false,
+  "source_model_sha256": "178cea7d38f12e929c995f55d4116cf7550a3f076e3f1b7210163d6bab7fd31b",
+  "camera_pose": "fixed for these reference photographs",
+  "site_mapping": [
+    "start",
+    "crossing"
+  ],
+  "require_same_frame_stripes": true,
+  "note": "Disposable calibration flags were enabled only in isolated replay. Production site profiles remain uncalibrated. This is not a physical run or brake-distance test."
+}

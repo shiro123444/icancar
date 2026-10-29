@@ -1,0 +1,11 @@
+{
+  "physical_motor_test": true,
+  "setup": "ground_clearance_operator_at_power",
+  "test": "forward-stop",
+  "stop_feedback_confirmed": false,
+  "firmware_timeout_observed": false,
+  "error": "ground test requires the verified upright board at 45..65 cm sonar distance",
+  "samples": 30,
+  "peak_linear_feedback": 0.0,
+  "nonzero_commands": 0
+}

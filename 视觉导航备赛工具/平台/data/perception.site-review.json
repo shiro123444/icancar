@@ -1,0 +1,22 @@
+{
+  "calibrated": false,
+  "start_line": {
+    "roi": [0.05, 0.84, 0.95, 0.99],
+    "axis": "y",
+    "white_threshold": 0.82,
+    "min_coverage": 0.7,
+    "min_band_fraction": 0.03,
+    "min_bands": 1,
+    "max_bands": 1
+  },
+  "crosswalk": {
+    "roi": [0.05, 0.5, 0.98, 0.81],
+    "axis": "x",
+    "white_threshold": 0.75,
+    "min_coverage": 0.35,
+    "min_band_fraction": 0.02,
+    "min_bands": 3,
+    "max_bands": 12
+  },
+  "review_note": "Only a static site reference. Start line at roughly 20 cm before front-wheel crossing is visible; it disappears into the near blind zone at the operator-reported wheel-line position. Front-wheel timing compensation is not calibrated. Crosswalk decisions currently use the separately reviewed model profile."
+}

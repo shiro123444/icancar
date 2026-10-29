@@ -1,0 +1,29 @@
+{
+  "state": "replay",
+  "metric_calibrated": false,
+  "confidence": 0.814,
+  "odometry": {
+    "x": 258.94,
+    "y": 54.42,
+    "heading_deg": -146.3
+  },
+  "fused": {
+    "x": 259.07,
+    "y": 58.53,
+    "heading_deg": -146.3
+  },
+  "section": "barrier_bay",
+  "section_label": "上方挡板区",
+  "direction": "forward",
+  "branch_conflict": false,
+  "route_progress_m": 3.974,
+  "lateral_distance_m": 0.159,
+  "route_length_m_estimate": 16.0,
+  "path": [],
+  "session": "field-lap3",
+  "source": "captured_telemetry",
+  "origin_assumption": [0, 0, 0],
+  "start_anchor_assumption": 1,
+  "registration": "nominal map scale and assumed zero odometry at the confirmed start; recompute when original trial origin is recovered",
+  "provenance": "HTTP telemetry captured in the field-lap3 monitor output; original vehicle frames await reconnection"
+}

@@ -18,6 +18,7 @@ from automation.demo import demo as automatic_demo
 from tools.audit_data import audit
 from race_record import RaceRecords
 from calibration import CalibrationSessions
+from automation.map_localization import LocalizationRuntime
 
 ROOT = Path(__file__).resolve().parent
 TRACK = json.loads((ROOT / 'data' / 'track.json').read_text(encoding='utf-8'))
@@ -117,7 +118,10 @@ class Handler(SimpleHTTPRequestHandler):
                 with urlopen('http://127.0.0.1:%d%s' % (self.server.telemetry_port,target),timeout=3.0) as response:
                     content=response.read(10_000_001)
                     if len(content)>10_000_000: raise ValueError('telemetry response too large')
-                    if target == '/health': return self.reply(json.loads(content))
+                    if target == '/health':
+                        value=json.loads(content)
+                        if getattr(self.server,'localization',None) is not None:value['localization']=self.server.localization.ingest(value)
+                        return self.reply(value)
                     self.send_response(200); self.send_header('Content-Type','image/jpeg'); self.send_header('Cache-Control','no-store'); self.send_header('Content-Length',str(len(content))); self.end_headers(); self.wfile.write(content); return
             except (BrokenPipeError, ConnectionResetError):
                 return
@@ -147,6 +151,12 @@ class Handler(SimpleHTTPRequestHandler):
         if path == '/api/mission/demo': return self.reply(mission_demo())
         if path == '/api/automation/demo': return self.reply(automatic_demo())
         if path == '/api/track': return self.reply(TRACK)
+        if path == '/api/track-scan':
+            p=ROOT/'data/地图扫描/现场局部-20261029.json'
+            return self.reply(json.loads(p.read_text()) if p.is_file() else {'yellow_contours':[],'image_size':[1280,960]})
+        if path == '/api/localization/last-trial':
+            p=ROOT/'data/地图扫描/field-lap3-map-estimate.json'
+            return self.reply(json.loads(p.read_text()) if p.is_file() else {'state':'waiting_for_anchor'})
         if path == '/api/state': return self.reply(SIM.state())
         if path.startswith('/api/'): return self.reply({'ok':False,'msg':'模拟模式暂未接入此功能'},404)
         return super().do_GET()
@@ -182,6 +192,20 @@ class Handler(SimpleHTTPRequestHandler):
                 if path == '/api/calibration/toggle':return self.reply(manager.set_enabled(payload.get('id'),payload.get('file'),payload.get('enabled')))
                 if path == '/api/calibration/compute':return self.reply(manager.compute(payload.get('id')))
                 return self.reply({'error':'not found'},404)
+            if path == '/api/localization/anchor':
+                if self.headers.get('Host','') not in ('127.0.0.1:'+str(self.server.server_port),'localhost:'+str(self.server.server_port)):
+                    return self.reply({'error':'invalid host'},403)
+                if self.headers.get_content_type()!='application/json':return self.reply({'error':'content type must be application/json'},415)
+                size=int(self.headers.get('Content-Length','0'))
+                if not 0<size<=2048:raise ValueError('请求大小无效')
+                payload=json.loads(self.rfile.read(size))
+                if not isinstance(payload,dict):raise ValueError('请求格式错误')
+                landmark=payload.get('landmark')
+                if not isinstance(landmark,int) or isinstance(landmark,bool) or not 1<=landmark<=8:raise ValueError('请选择地标')
+                with urlopen('http://127.0.0.1:%d/health'%self.server.telemetry_port,timeout=3) as r:status=json.load(r)
+                pose=status.get('pose');age=status.get('odom_age_s')
+                if not isinstance(pose,dict) or not isinstance(age,(int,float)) or age>.5:raise ValueError('等待新鲜里程计')
+                return self.reply(self.server.localization.seed(landmark,[pose['x'],pose['y'],pose['yaw_rad']],-90 if landmark==1 else None))
             if path.startswith('/api/race-record/'):
                 if self.headers.get('Host','') not in ('127.0.0.1:'+str(self.server.server_port),'localhost:'+str(self.server.server_port)):
                     return self.reply({'error':'invalid host'},403)
@@ -231,6 +255,7 @@ def main():
     args = parser.parse_args()
     server = ThreadingHTTPServer(('127.0.0.1',args.port), Handler)
     server.telemetry_port = args.telemetry_port
+    server.localization = LocalizationRuntime(TRACK)
     server.records = RaceRecords(ROOT / 'data' / '比赛记录')
     server.calibrations = CalibrationSessions(ROOT / 'data' / '相机标定', args.calibration_python, ROOT / 'tools' / 'calibration_worker.py')
     print(f'打开 http://127.0.0.1:{args.port}/  （Ctrl+C 停止）',flush=True)

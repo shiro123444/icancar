@@ -1,0 +1,17 @@
+{
+  "sonar_cm": [
+    85.0,
+    184.0,
+    86.0,
+    85.0,
+    85.0,
+    116.0,
+    86.0,
+    86.0
+  ],
+  "odom_count": 26,
+  "max_linear": 0.0,
+  "max_angular": 0.0,
+  "cmd_vel_publishers": 0,
+  "motion_commands_sent": 0
+}

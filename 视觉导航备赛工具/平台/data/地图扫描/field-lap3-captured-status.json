@@ -1,0 +1,18 @@
+{
+  "provenance": "HTTP telemetry captured in the field-lap3 monitor output; original vehicle frames await reconnection",
+  "session": "field-lap3",
+  "elapsed_seconds": 26.05,
+  "distance_m": 3.716,
+  "pose": [
+    2.816994448531213,
+    1.5581751451040715,
+    0.9823480735855227
+  ],
+  "phase": "fault",
+  "reason": "blue_surface_in_near_path",
+  "velocity": [
+    0.0,
+    0.0,
+    0.0
+  ]
+}

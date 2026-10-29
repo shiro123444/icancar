@@ -1,0 +1,30 @@
+{
+  "physical_motor_test": false,
+  "setup": "ground_clearance_operator_at_power",
+  "test": "forward-stop",
+  "requested_speed_mps": 0.05,
+  "requested_duration_s": 3,
+  "stop_feedback_confirmed": true,
+  "firmware_timeout_observed": false,
+  "startup_sonar_cm": [
+    85,
+    115
+  ],
+  "motion_sonar_cm": [
+    60,
+    115
+  ],
+  "emergency_sonar_cm": 30,
+  "near_confirmation_frames": 2,
+  "near_confirmation_deadline_s": 0.05,
+  "stop_feedback_delay_s": 0.04,
+  "motion_elapsed_s": 3.01,
+  "samples": 256,
+  "peak_linear_feedback": 0.05,
+  "nonzero_commands": 28,
+  "range_rejections": 8,
+  "last_sonar_cm": 92.0,
+  "transient_sonar_dips": 4,
+  "simulated_velocity_feedback": true,
+  "range_source": "stationary 500-frame physical sensor recording"
+}

@@ -1,6 +1,6 @@
 import unittest
 
-from automation.model_crosswalk import ModelCrosswalk, validate_model_config
+from automation.model_crosswalk import ModelCrosswalk, validate_model_config, geometry_settings, verify_crosswalk_box
 from automation.race import Race
 
 
@@ -15,6 +15,35 @@ def result(stamp, detections=None):
 
 
 class ModelCrosswalkTests(unittest.TestCase):
+    def test_bound_mapping_and_same_frame_geometry_are_required(self):
+        c=dict(CONFIG,class_order=['start','crossing'],model_sha256='a'*64,require_stripes=True)
+        guard=ModelCrosswalk(c)
+        item={'label':'crossing','class_id':1,'score':.8,'box':[200,140,400,350],
+              'stripe_verified':False,'stripe_bands':1}
+        value=result(10_000_000_000,[item])
+        value.update(class_order=c['class_order'],model_sha256=c['model_sha256'],stripe_geometry=geometry_settings(c))
+        self.assertIs(guard.update(value,1,10_000_000_000),False)
+        item.update(stripe_verified=True,stripe_bands=4)
+        value['stamp_ns']=10_100_000_000
+        self.assertIs(guard.update(value,1.1,10_100_000_000),True)
+        value['stamp_ns']=10_200_000_000
+        value['class_order']=['crossing','start']
+        self.assertIsNone(guard.update(value,1.2,10_200_000_000))
+        self.assertFalse(guard.available(1.2,10_200_000_000))
+
+    def test_real_start_stripe_and_crosswalks_have_different_structure(self):
+        from pathlib import Path
+        import numpy as np
+        from PIL import Image
+        folder=Path(__file__).resolve().parents[1]/'data/现场采集/20261029-充电后联调'
+        cases=[('起点-1139.jpg',[0,424.7,569.2,480],False),
+               ('人行道前30cm.jpg',[271.8,271.3,640,386.9],True),
+               ('人行道前50cm.jpg',[101.4,239.9,461.5,291.5],True)]
+        if not all((folder/name).is_file() for name,_,_ in cases):self.skipTest('site reference images unavailable')
+        for name,box,expected in cases:
+            image=np.asarray(Image.open(folder/name).convert('RGB'))
+            self.assertIs(verify_crosswalk_box(image,box,CONFIG)['stripe_verified'],expected,name)
+
     def test_confidence_region_and_freshness(self):
         guard = ModelCrosswalk(dict(CONFIG))
         crossing = {'label': 'crossing', 'score': .7, 'box': [200, 140, 400, 350]}
@@ -89,6 +118,10 @@ class ModelCrosswalkTests(unittest.TestCase):
             validate_model_config(dict(CONFIG, roi=[0, 0, 0, 1]))
         with self.assertRaises(ValueError):
             validate_model_config(dict(CONFIG, max_gap_s=float('nan')))
+        with self.assertRaises(ValueError):
+            validate_model_config(dict(CONFIG,class_order=[[],[]]))
+        with self.assertRaises(ValueError):
+            validate_model_config(dict(CONFIG,require_stripes=True,stripe_geometry=None))
 
 
 if __name__ == '__main__':

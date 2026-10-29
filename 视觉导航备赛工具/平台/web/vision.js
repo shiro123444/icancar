@@ -1,6 +1,6 @@
 // Digital track overlay for the reused racecar console.
 (async function(){
- const svg=document.getElementById('visionMap'), ns='http://www.w3.org/2000/svg';let vehicle;
+ const svg=document.getElementById('visionMap'), ns='http://www.w3.org/2000/svg';
  function el(name,attrs,parent=svg){const e=document.createElementNS(ns,name);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);parent.appendChild(e);return e}
  try{
   const t=await (await fetch('/api/track')).json();
@@ -10,10 +10,25 @@
   const l=t.start_line;el('line',{x1:l.x1,y1:l.y1,x2:l.x2,y2:l.y2,stroke:'#3964fe','stroke-width':3});
   t.barriers.forEach(b=>el('line',{x1:b.x1,y1:b.y1,x2:b.x2,y2:b.y2,stroke:'#48a6b8','stroke-width':7,'stroke-linecap':'round'}));
   t.landmarks.forEach(m=>{el('circle',{cx:m.x,cy:m.y,r:10,fill:'#dce8ff'});const text=el('text',{x:m.x,y:m.y+4,'text-anchor':'middle','font-size':11,fill:'#294bc9'});text.textContent=m.id});
-  vehicle=el('g',{});el('circle',{cx:0,cy:0,r:14,fill:'#fce6c8'},vehicle);el('path',{d:'M 11 0 L -7 -7 L -4 0 L -7 7 Z',fill:'#dd8629'},vehicle);
-  async function update(){try{const s=await(await fetch('/api/state',{cache:'no-store'})).json();vehicle.setAttribute('transform',`translate(${s.pose.x} ${s.pose.y}) rotate(${s.pose.heading_deg})`);document.getElementById('visionPosition').textContent=`${s.pose.x.toFixed(1)}, ${s.pose.y.toFixed(1)} · ${s.pose.heading_deg.toFixed(0)}°`}catch(e){}}
-  document.getElementById('visionReset').onclick=()=>fetch('/api/command',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'reset_pose'})}).then(update);
-  update();setInterval(update,150);
+  if(t.navigation){
+   el('polyline',{points:t.navigation.points.map(p=>p.join(',')).join(' '),fill:'none',stroke:'#517ddd','stroke-width':2,'stroke-dasharray':'5 6',opacity:.45});
+   for(let n=15;n<t.navigation.points.length;n+=45){const p=t.navigation.points[n],q=t.navigation.points[(n+1)%t.navigation.points.length],a=Math.atan2(q[1]-p[1],q[0]-p[0])*180/Math.PI;el('path',{d:'M 6 0 L -5 -4 L -3 0 L -5 4 Z',fill:'#517ddd',transform:`translate(${p[0]} ${p[1]}) rotate(${a})`})}
+  }
+  const trace=el('polyline',{points:'',fill:'none',stroke:'#dd8629','stroke-width':2,opacity:.65});
+  function marker(color){const g=el('g',{display:'none'});el('circle',{cx:0,cy:0,r:12,fill:'var(--bg-card)',stroke:color,'stroke-width':3},g);el('path',{d:'M 10 0 L -6 -6 L -3 0 L -6 6 Z',fill:color},g);return g}
+  const wheel=marker('#29a6b8'),fused=marker('#dd8629');
+  window.addEventListener('robot-localization',e=>{
+   const s=e.detail||{},ok=s.fused&&s.odometry;
+   if(ok){for(const [g,p] of [[wheel,s.odometry],[fused,s.fused]]){g.setAttribute('display','');g.setAttribute('transform',`translate(${p.x} ${p.y}) rotate(${p.heading_deg})`);g.setAttribute('opacity',s.state==='tracking'?1:.4)}trace.setAttribute('points',(s.path||[]).map(p=>p.join(',')).join(' '));document.getElementById('visionPosition').textContent=`${s.fused.x.toFixed(1)}, ${s.fused.y.toFixed(1)} · ${s.fused.heading_deg.toFixed(0)}°`}
+   else{wheel.setAttribute('display','none');fused.setAttribute('display','none');trace.setAttribute('points','');document.getElementById('visionPosition').textContent='位置 —'}
+   document.getElementById('visionLocState').textContent=s.state==='replay'?'历史估计':s.state==='tracking'?`地图匹配 ${Math.round((s.confidence||0)*100)}%`:s.state==='last_known'?'上次位置':'待定位';
+   const dir={forward:'正向',reverse:'反向',uncertain:'朝向待确认'};
+   document.getElementById('visionSection').textContent=s.section_label?`${s.section_label} · ${dir[s.direction]||''}${s.branch_conflict?' · 分支待确认':''}`:'路段 —';
+  });
+  window.addEventListener('robot-offline',()=>{wheel.setAttribute('opacity',.4);fused.setAttribute('opacity',.4);const label=document.getElementById('visionLocState');if(label.textContent.startsWith('地图匹配'))label.textContent='上次位置'});
+  document.getElementById('visionReset').onclick=async()=>{try{const r=await fetch('/api/localization/anchor',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({landmark:1})}),s=await r.json();if(!r.ok)throw Error(s.error||'定位未就绪');window.dispatchEvent(new CustomEvent('robot-localization',{detail:s}))}catch(e){document.getElementById('visionLocState').textContent=e.message}};
+  document.getElementById('visionReplay').onclick=async()=>{try{const r=await fetch('/api/localization/last-trial',{cache:'no-store'});if(!r.ok)throw Error();const s=await r.json();window.dispatchEvent(new CustomEvent('robot-localization',{detail:s}))}catch(e){document.getElementById('visionLocState').textContent='回放待就绪'}};
+  try{const s=await(await fetch('/api/track-scan')).json(),p=document.getElementById('trackPhotoScan');p.setAttribute('viewBox',`0 0 ${s.image_size[0]} ${s.image_size[1]}`);for(const line of s.yellow_contours)el('polygon',{points:line.map(v=>v.join(',')).join(' '),fill:'none',stroke:'#d6a828','stroke-width':2},p)}catch(e){}
  }catch(e){console.error('赛道加载失败',e)}
 })();
 
@@ -47,6 +62,7 @@
  }
  async function poll(){if(polling)return;polling=true;try{
    const res=await fetch('/api/robot/telemetry',{cache:'no-store',signal:AbortSignal.timeout(4000)});if(!res.ok)throw Error('offline');const v=await res.json();lastSuccess=Date.now();
+   window.dispatchEvent(new CustomEvent('robot-localization',{detail:v.localization||{state:'waiting_for_anchor'}}));
    status.textContent='只读连接';
    odom.textContent=v.pose && v.odom_age_s<3 ? `里程计 ${v.pose.x.toFixed(2)}, ${v.pose.y.toFixed(2)} · ${v.pose.frame_id} · ${v.odom_age_s}s` : '里程计 —';
    camera.textContent=v.camera_age_s!==null && v.camera_age_s<3 ? `相机 ${v.camera_age_s}s` : '相机 —';
@@ -68,7 +84,7 @@
    const avoidance=v.avoidance && v.avoidance_age_s!==null && v.avoidance_age_s<3 ? v.avoidance : null;
    const avoidanceLabels={uncalibrated:'待标定',input_unavailable:'等待数据',lane_stop:'停车',lane_geometry_invalid:'车道待确认',confirming_clear:'确认通道',follow_lane:'循迹',barrier_too_close:'距离过近',no_safe_gap:'停车',avoid_barrier:'绕行'};
    document.getElementById('robotAvoidance').textContent=avoidance?`避障 · ${avoidanceLabels[avoidance.reason]||'等待'}`:'避障 —';
-   const controlLabels={waiting:'等待',disabled:'未启用',ready:'就绪',estop_latched_or_stale:'急停待复位',odometry_stale:'里程计超时',odometry_limit:'里程计超限',stop_not_confirmed:'停车未确认',safety_mission_or_command_stop:'停车'};
+   const controlLabels={waiting:'等待',disabled:'未启用',ready:'就绪',estop_latched_or_stale:'急停待复位',odometry_stale:'里程计超时',odometry_limit:'里程计超限',stop_not_confirmed:'停车未确认',safety_mission_or_command_stop:'停车',supervised_follow:'循迹',crosswalk:'人行道前停车礼让行人',one_lap_reference_return:'一圈完成',trial_time_limit:'试跑结束',operator_stop:'已停止',wheel_feedback_limit:'轮速异常',camera_view_obscured:'摄像头被遮挡',camera_model_or_odometry_stale:'画面或反馈中断'};
    const controlElement=document.getElementById('robotControl');
    const safetyAge=control && Number.isFinite(control.safety_age_s) ? ` · 安全信号 ${Math.round((control.safety_age_s+v.control_age_s)*1000)}ms` : '';
    if(controlElement)controlElement.textContent=control?`控制 · ${controlLabels[control.reason]||'等待'}${safetyAge}`:'控制 —';
@@ -86,6 +102,7 @@
  }catch(e){
    if(Date.now()-lastSuccess<5000){status.textContent='连接中';return}
    status.textContent='等待连接';odom.textContent='里程计 —';camera.textContent='相机 —';img.style.display='none';showMission(null);
+   window.dispatchEvent(new CustomEvent('robot-offline'));
    document.getElementById('calCameraState').textContent='等待相机连接';document.getElementById('calLive').removeAttribute('src');
    document.getElementById('robotModel').textContent='模型 —';document.getElementById('camModel').textContent='模型 —';document.getElementById('percModel').textContent='模型 —'
    for(const id of ['robotSteering','camSteering','percSteering'])document.getElementById(id).textContent='循迹预览 —';

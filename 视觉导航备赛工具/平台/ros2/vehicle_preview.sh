@@ -7,8 +7,8 @@ RUNNER="$ROOT/ros2/run_foxy.sh"
 CAMERA=/dev/video0
 BASE=/dev/deepbotbase
 VOICE=/dev/serial/by-id/usb-1a86_USB_Single_Serial_5A84037923-if00
-CONFIG="$ROOT/data/perception.lab-example.json"
-MODEL_CONFIG="$ROOT/data/crosswalk-model.example.json"
+CONFIG="${VISION_PERCEPTION_CONFIG:-$ROOT/data/perception.lab-example.json}"
+MODEL_CONFIG="${VISION_MODEL_CONFIG:-$ROOT/data/crosswalk-model.example.json}"
 BARRIER_CONFIG="$ROOT/data/barrier.example.json"
 MODEL="$HOME/catkin_ws/src/deepbot_project/deepbot_openvino/model/race.xml"
 STEERING_MODEL="$ROOT/data/models/steering.pth"
@@ -79,7 +79,7 @@ case "${1:-status}" in
     start_one base ros2/deepbot_base.py --device "$BASE" --publish-hz 20 --sensor-topic /visual_race/base_sensor_diagnostics
     start_one voice ros2/serial_voice_player.py --device "$VOICE"
     start_one mission ros2/automatic_race.py --camera-topic /camera/rgb/image_raw/compressed --camera-type compressed --odom-topic /raw_odom --config "$CONFIG" --crosswalk-source model --model-config "$MODEL_CONFIG" --events-dir logs/ros2-events
-    if [[ -f "$MODEL" ]]; then start_one model ros2/openvino_preview.py --model "$MODEL" --max-fps 5; fi
+    if [[ -f "$MODEL" ]]; then start_one model ros2/openvino_preview.py --model "$MODEL" --model-config "$MODEL_CONFIG" --max-fps 5; fi
     if [[ -f "$STEERING_MODEL" && -f "$ROOT/training/train_steering.py" ]]; then start_one steering ros2/steering_preview.py --model "$STEERING_MODEL"; fi
     if [[ -f "$BARRIER_CONFIG" ]]; then start_one barrier ros2/barrier_detector.py --config "$BARRIER_CONFIG"; fi
     start_one bridge ros2/telemetry_bridge.py --port 8770 --camera-topic /camera/rgb/image_raw/compressed --camera-type compressed --odom-topic /raw_odom --mission-topic /visual_race/status --model-topic /visual_race/model_detections --calibration-topic /visual_race/calibration --steering-topic /visual_race/steering_preview --control-topic /visual_race/control_diagnostics --barrier-topic /visual_race/barrier_observation --avoidance-topic /visual_race/avoidance_diagnostics

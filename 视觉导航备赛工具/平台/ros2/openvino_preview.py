@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Run the manufacturer's race model on ROS 2 images without vehicle control."""
 import argparse
+import hashlib
 import json
 import math
 import sys
@@ -10,11 +11,13 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from automation.realtime import LatestWorker
 from automation.steering_candidate import fresh_frame
 from automation.yolo import predictions
+from automation.model_crosswalk import validate_model_config, geometry_settings, verify_crosswalk_box
 
 
 def main():
     p=argparse.ArgumentParser(description='ROS 2 原厂视觉模型只读推理')
     p.add_argument('--model',required=True,help='race.xml 的绝对路径')
+    p.add_argument('--model-config',default='',help='可选：绑定模型、类别顺序及白条结构核对的配置')
     p.add_argument('--camera-topic',default='/camera/rgb/image_raw/compressed')
     p.add_argument('--output-topic',default='/visual_race/model_detections')
     p.add_argument('--max-fps',type=float,default=5.)
@@ -28,6 +31,12 @@ def main():
     if (not math.isfinite(args.max_fps) or not 0<args.max_fps<=10 or not 0<args.threshold<1
             or not 1<=args.threads<=8 or not math.isfinite(args.max_source_age) or args.max_source_age<=0
             or not math.isfinite(args.timeout) or args.timeout<=0):p.error('推理参数无效')
+    config=None
+    if args.model_config:
+        with open(args.model_config,encoding='utf-8') as handle:config=validate_model_config(json.load(handle))
+    class_order=(config or {}).get('class_order',['crossing','start'])
+    fingerprint=hashlib.sha256(model.read_bytes()+model.with_suffix('.bin').read_bytes()).hexdigest()
+    if config and config.get('model_sha256',fingerprint)!=fingerprint:p.error('模型与现场配置绑定不一致')
     import cv2
     import numpy as np
     import rclpy
@@ -82,10 +91,18 @@ def main():
             tensor=np.ascontiguousarray(rgb.transpose(2,0,1)[None],dtype=np.float32)/255.0
             begin=time.monotonic()
             output=compiled([tensor])[compiled.output(0)]
+            inference_ms=(time.monotonic()-begin)*1000
+            detections=predictions(output,w,h,args.threshold,class_names=class_order)
+            if config and config.get('require_stripes'):
+                full_rgb=cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
+                for item in detections:
+                    if item['label']=='crossing':item.update(verify_crosswalk_box(full_rgb,item['box'],config))
             return {'source':'openvino_race','valid':True,'stamp_ns':stamp,'width':w,'height':h,
-                    'inference_ms':round((time.monotonic()-begin)*1000,1),
+                    'class_order':class_order,'model_sha256':fingerprint,
+                    'stripe_geometry':geometry_settings(config) if config and config.get('require_stripes') else None,
+                    'inference_ms':round(inference_ms,1),
                     'processing_ms':round((time.monotonic()-started)*1000,1),
-                    'detections':predictions(output,w,h,args.threshold)}
+                    'detections':detections}
         def publish_result(self):
             result=self.worker.take()
             if result is None:return

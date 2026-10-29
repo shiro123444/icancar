@@ -1,0 +1,1358 @@
+{
+  "source": "saved camera images",
+  "read_only": true,
+  "physical_motor_commands": false,
+  "frames": 20,
+  "valid_paired_lane_frames": 15,
+  "blue_candidate_frames": 0,
+  "obscured_frames": 1,
+  "processing_ms_p50": 3.146,
+  "processing_ms_p95": 3.403,
+  "benchmark_scope": "local image processing only; excludes inference, network and vehicle response",
+  "review_labels_verified": false,
+  "records": [
+    {
+      "image_path": "supervised-field-lap1/crosswalk_stop-1793256101970085038.jpg",
+      "sha256": "46436efbfe72955672c3140ab6dffb323a09517ea715651497502cbd5801bd94",
+      "image_size": [
+        640,
+        480
+      ],
+      "lane": {
+        "valid": false,
+        "confidence": 0.2857142857142857,
+        "rows": [
+          [
+            0.5,
+            0.3109375,
+            0.8140625
+          ],
+          [
+            0.56,
+            0.25,
+            0.9046875
+          ]
+        ],
+        "blue_boxes": []
+      },
+      "quality": {
+        "visible": true,
+        "yellow_fraction": 0.05678,
+        "texture": 15.808
+      },
+      "stripes": {
+        "start_line": {
+          "detected": false,
+          "bands": 0,
+          "white_fraction": 0.0,
+          "rect": [
+            32,
+            403,
+            608,
+            476
+          ]
+        },
+        "crosswalk": {
+          "detected": false,
+          "bands": 1,
+          "white_fraction": 0.154,
+          "rect": [
+            32,
+            240,
+            628,
+            389
+          ]
+        }
+      },
+      "processing_ms": 2.704,
+      "training_label_valid": false
+    },
+    {
+      "image_path": "supervised-field-lap1/crosswalk_stop_complete-1793256105370077017.jpg",
+      "sha256": "5e70cc4f4bebb48b8526d53685dbcc3bbb0509736e2ffa065cc09e772f5d2f5d",
+      "image_size": [
+        640,
+        480
+      ],
+      "lane": {
+        "valid": true,
+        "confidence": 0.42857142857142855,
+        "rows": [
+          [
+            0.5,
+            0.303125,
+            0.8015625
+          ],
+          [
+            0.56,
+            0.246875,
+            0.903125
+          ],
+          [
+            0.62,
+            0.18125,
+            0.9875
+          ]
+        ],
+        "lane": [
+          0.06093749999999998,
+          1.0
+        ],
+        "near_center": 0.6186197916666665,
+        "far_center": 0.5652343749999998,
+        "lateral_error": -0.10635068876955393,
+        "heading_error": 0.26084550357399366,
+        "left_margin": 0.39364931123044616,
+        "right_margin": 0.6063506887695539,
+        "steering_hint": 0.07042050745877482,
+        "blue_boxes": []
+      },
+      "quality": {
+        "visible": true,
+        "yellow_fraction": 0.05574,
+        "texture": 17.86
+      },
+      "stripes": {
+        "start_line": {
+          "detected": false,
+          "bands": 0,
+          "white_fraction": 0.0002,
+          "rect": [
+            32,
+            403,
+            608,
+            476
+          ]
+        },
+        "crosswalk": {
+          "detected": false,
+          "bands": 1,
+          "white_fraction": 0.1814,
+          "rect": [
+            32,
+            240,
+            628,
+            389
+          ]
+        }
+      },
+      "processing_ms": 3.402,
+      "training_label_valid": false
+    },
+    {
+      "image_path": "supervised-field-lap1/fault-1793256136970103371.jpg",
+      "sha256": "1e4bf6caf18d2e81ad59ad51867e8c39cc2391342a993ef48356644c4df74193",
+      "image_size": [
+        640,
+        480
+      ],
+      "lane": {
+        "valid": false,
+        "confidence": 0.0,
+        "rows": [],
+        "blue_boxes": []
+      },
+      "quality": {
+        "visible": false,
+        "yellow_fraction": 0.0,
+        "texture": 2.363
+      },
+      "stripes": {
+        "start_line": {
+          "detected": false,
+          "bands": 0,
+          "white_fraction": 0.0,
+          "rect": [
+            32,
+            403,
+            608,
+            476
+          ]
+        },
+        "crosswalk": {
+          "detected": false,
+          "bands": 0,
+          "white_fraction": 0.0,
+          "rect": [
+            32,
+            240,
+            628,
+            389
+          ]
+        }
+      },
+      "processing_ms": 2.003,
+      "training_label_valid": false
+    },
+    {
+      "image_path": "supervised-field-lap1/start-1793256096770090622.jpg",
+      "sha256": "3cd7f5a61030cca5783348434b96dfaf0c5e88f226d9092fd86b5a48ed5225a1",
+      "image_size": [
+        640,
+        480
+      ],
+      "lane": {
+        "valid": true,
+        "confidence": 0.42857142857142855,
+        "rows": [
+          [
+            0.5,
+            0.3265625,
+            0.83125
+          ],
+          [
+            0.56,
+            0.25625,
+            0.9109375
+          ],
+          [
+            0.62,
+            0.178125,
+            0.9890625
+          ]
+        ],
+        "lane": [
+          0.030989583333333348,
+          1.0
+        ],
+        "near_center": 0.5890624999999996,
+        "far_center": 0.5812499999999998,
+        "lateral_error": -0.07979468035464272,
+        "heading_error": 0.03904264995516588,
+        "left_margin": 0.4202053196453573,
+        "right_margin": 0.5797946803546428,
+        "steering_hint": -0.07249896449690284,
+        "blue_boxes": []
+      },
+      "quality": {
+        "visible": true,
+        "yellow_fraction": 0.04915,
+        "texture": 16.655
+      },
+      "stripes": {
+        "start_line": {
+          "detected": false,
+          "bands": 0,
+          "white_fraction": 0.0975,
+          "rect": [
+            32,
+            403,
+            608,
+            476
+          ]
+        },
+        "crosswalk": {
+          "detected": false,
+          "bands": 1,
+          "white_fraction": 0.1224,
+          "rect": [
+            32,
+            240,
+            628,
+            389
+          ]
+        }
+      },
+      "processing_ms": 3.215,
+      "training_label_valid": false
+    },
+    {
+      "image_path": "人工直行0.2mps-之前.jpg",
+      "sha256": "02da2461406d57c9a8d2a67b78b819bf9bc4880b207954baeb8d9d6a0ceb6167",
+      "image_size": [
+        640,
+        480
+      ],
+      "lane": {
+        "valid": true,
+        "confidence": 0.42857142857142855,
+        "rows": [
+          [
+            0.5,
+            0.259375,
+            0.759375
+          ],
+          [
+            0.56,
+            0.1890625,
+            0.84375
+          ],
+          [
+            0.62,
+            0.1234375,
+            0.925
+          ]
+        ],
+        "lane": [
+          0.0,
+          1.0
+        ],
+        "near_center": 0.5389322916666663,
+        "far_center": 0.5141927083333333,
+        "lateral_error": -0.03525112001886319,
+        "heading_error": 0.12307273847759538,
+        "left_margin": 0.4647488799811368,
+        "right_margin": 0.5352511200188632,
+        "steering_hint": 0.05263173475755416,
+        "blue_boxes": []
+      },
+      "quality": {
+        "visible": true,
+        "yellow_fraction": 0.05257,
+        "texture": 21.106
+      },
+      "stripes": {
+        "start_line": {
+          "detected": false,
+          "bands": 0,
+          "white_fraction": 0.2669,
+          "rect": [
+            32,
+            403,
+            608,
+            476
+          ]
+        },
+        "crosswalk": {
+          "detected": false,
+          "bands": 2,
+          "white_fraction": 0.2159,
+          "rect": [
+            32,
+            240,
+            628,
+            389
+          ]
+        }
+      },
+      "processing_ms": 3.144,
+      "training_label_valid": false
+    },
+    {
+      "image_path": "人工直行0.2mps-之后.jpg",
+      "sha256": "b57e2231e82f797227207b956ff20ddb0be2e643e5dc5762a0daf6a9be94a389",
+      "image_size": [
+        640,
+        480
+      ],
+      "lane": {
+        "valid": true,
+        "confidence": 0.42857142857142855,
+        "rows": [
+          [
+            0.5,
+            0.240625,
+            0.7515625
+          ],
+          [
+            0.56,
+            0.171875,
+            0.83125
+          ],
+          [
+            0.62,
+            0.0953125,
+            0.9109375
+          ]
+        ],
+        "lane": [
+          0.0,
+          1.0
+        ],
+        "near_center": 0.5108072916666665,
+        "far_center": 0.4990885416666666,
+        "lateral_error": -0.009657900861065712,
+        "heading_error": 0.058526832566301215,
+        "left_margin": 0.4903420991389343,
+        "right_margin": 0.5096579008610657,
+        "steering_hint": 0.03426619493365555,
+        "blue_boxes": []
+      },
+      "quality": {
+        "visible": true,
+        "yellow_fraction": 0.05007,
+        "texture": 17.021
+      },
+      "stripes": {
+        "start_line": {
+          "detected": false,
+          "bands": 0,
+          "white_fraction": 0.0261,
+          "rect": [
+            32,
+            403,
+            608,
+            476
+          ]
+        },
+        "crosswalk": {
+          "detected": false,
+          "bands": 2,
+          "white_fraction": 0.1051,
+          "rect": [
+            32,
+            240,
+            628,
+            389
+          ]
+        }
+      },
+      "processing_ms": 3.156,
+      "training_label_valid": false
+    },
+    {
+      "image_path": "人行道前30cm.jpg",
+      "sha256": "7ad6cba3c1f0341d4019f3a849b4abf5ee931661ff834a57254b1307423de345",
+      "image_size": [
+        640,
+        480
+      ],
+      "lane": {
+        "valid": true,
+        "confidence": 0.42857142857142855,
+        "rows": [
+          [
+            0.5,
+            0.2859375,
+            0.7859375
+          ],
+          [
+            0.56,
+            0.2171875,
+            0.8703125
+          ],
+          [
+            0.62,
+            0.25,
+            0.95
+          ]
+        ],
+        "lane": [
+          0.19713541666666648,
+          1.0
+        ],
+        "near_center": 0.655989583333333,
+        "far_center": 0.5492187499999999,
+        "lateral_error": -0.1699772985244038,
+        "heading_error": 0.490362731636923,
+        "left_margin": 0.33002270147559626,
+        "right_margin": 0.6699772985244037,
+        "steering_hint": 0.17131969722781346,
+        "blue_boxes": []
+      },
+      "quality": {
+        "visible": true,
+        "yellow_fraction": 0.05155,
+        "texture": 20.243
+      },
+      "stripes": {
+        "start_line": {
+          "detected": false,
+          "bands": 0,
+          "white_fraction": 0.0,
+          "rect": [
+            32,
+            403,
+            608,
+            476
+          ]
+        },
+        "crosswalk": {
+          "detected": true,
+          "bands": 6,
+          "white_fraction": 0.3843,
+          "rect": [
+            32,
+            240,
+            628,
+            389
+          ]
+        }
+      },
+      "processing_ms": 3.148,
+      "training_label_valid": false
+    },
+    {
+      "image_path": "人行道前50cm.jpg",
+      "sha256": "3625484d23044756d59cdc636cd0aeed8734c3c1942ff7a56ab574879cd1b9af",
+      "image_size": [
+        640,
+        480
+      ],
+      "lane": {
+        "valid": true,
+        "confidence": 0.42857142857142855,
+        "rows": [
+          [
+            0.5,
+            0.2484375,
+            0.734375
+          ],
+          [
+            0.56,
+            0.1625,
+            0.81875
+          ],
+          [
+            0.62,
+            0.0765625,
+            0.896875
+          ]
+        ],
+        "lane": [
+          0.0,
+          1.0
+        ],
+        "near_center": 0.48255208333333316,
+        "far_center": 0.49036458333333316,
+        "lateral_error": 0.01509689049121242,
+        "heading_error": -0.03904264995516699,
+        "left_margin": 0.5150968904912124,
+        "right_margin": 0.4849031095087876,
+        "steering_hint": -0.01160816232555745,
+        "blue_boxes": []
+      },
+      "quality": {
+        "visible": true,
+        "yellow_fraction": 0.04879,
+        "texture": 19.839
+      },
+      "stripes": {
+        "start_line": {
+          "detected": false,
+          "bands": 0,
+          "white_fraction": 0.0,
+          "rect": [
+            32,
+            403,
+            608,
+            476
+          ]
+        },
+        "crosswalk": {
+          "detected": false,
+          "bands": 0,
+          "white_fraction": 0.1237,
+          "rect": [
+            32,
+            240,
+            628,
+            389
+          ]
+        }
+      },
+      "processing_ms": 3.136,
+      "training_label_valid": false
+    },
+    {
+      "image_path": "回起点复核.jpg",
+      "sha256": "7ad3aecca7784438cba78ef2acfd0973111d9314ca5e8b942c1545d5812617b2",
+      "image_size": [
+        640,
+        480
+      ],
+      "lane": {
+        "valid": true,
+        "confidence": 0.42857142857142855,
+        "rows": [
+          [
+            0.5,
+            0.2515625,
+            0.75
+          ],
+          [
+            0.56,
+            0.184375,
+            0.825
+          ],
+          [
+            0.62,
+            0.1109375,
+            0.9046875
+          ]
+        ],
+        "lane": [
+          0.0,
+          1.0
+        ],
+        "near_center": 0.5149739583333333,
+        "far_center": 0.5032552083333335,
+        "lateral_error": -0.0137724550898203,
+        "heading_error": 0.05852683256630066,
+        "left_margin": 0.4862275449101797,
+        "right_margin": 0.5137724550898203,
+        "steering_hint": 0.028917274436274138,
+        "blue_boxes": []
+      },
+      "quality": {
+        "visible": true,
+        "yellow_fraction": 0.05098,
+        "texture": 16.015
+      },
+      "stripes": {
+        "start_line": {
+          "detected": false,
+          "bands": 0,
+          "white_fraction": 0.0988,
+          "rect": [
+            32,
+            403,
+            608,
+            476
+          ]
+        },
+        "crosswalk": {
+          "detected": false,
+          "bands": 0,
+          "white_fraction": 0.1038,
+          "rect": [
+            32,
+            240,
+            628,
+            389
+          ]
+        }
+      },
+      "processing_ms": 3.127,
+      "training_label_valid": false
+    },
+    {
+      "image_path": "地面测试准备核对.jpg",
+      "sha256": "4fbc2bb031e8294a06292b93bffc9aa9da3f66816aee0eb3c47b5255aeaaa2db",
+      "image_size": [
+        640,
+        480
+      ],
+      "lane": {
+        "valid": true,
+        "confidence": 0.42857142857142855,
+        "rows": [
+          [
+            0.5,
+            0.271875,
+            0.778125
+          ],
+          [
+            0.56,
+            0.2,
+            0.871875
+          ],
+          [
+            0.62,
+            0.1421875,
+            0.95625
+          ]
+        ],
+        "lane": [
+          0.010156250000000089,
+          1.0
+        ],
+        "near_center": 0.5730468749999998,
+        "far_center": 0.5326822916666665,
+        "lateral_error": -0.06488549618320599,
+        "heading_error": 0.19914774829450713,
+        "left_margin": 0.435114503816794,
+        "right_margin": 0.564885496183206,
+        "steering_hint": 0.07496705359743791,
+        "blue_boxes": []
+      },
+      "quality": {
+        "visible": true,
+        "yellow_fraction": 0.05383,
+        "texture": 13.296
+      },
+      "stripes": {
+        "start_line": {
+          "detected": true,
+          "bands": 1,
+          "white_fraction": 0.8605,
+          "rect": [
+            32,
+            403,
+            608,
+            476
+          ]
+        },
+        "crosswalk": {
+          "detected": false,
+          "bands": 0,
+          "white_fraction": 0.0335,
+          "rect": [
+            32,
+            240,
+            628,
+            389
+          ]
+        }
+      },
+      "processing_ms": 3.282,
+      "training_label_valid": false
+    },
+    {
+      "image_path": "当前核对-1155.jpg",
+      "sha256": "83a7e038ab17b6822a76f73d0c3a5128357bba1f5645f8b17576a3cc7866625e",
+      "image_size": [
+        640,
+        480
+      ],
+      "lane": {
+        "valid": true,
+        "confidence": 0.5714285714285714,
+        "rows": [
+          [
+            0.5,
+            0.25,
+            0.7390625
+          ],
+          [
+            0.56,
+            0.1703125,
+            0.81875
+          ],
+          [
+            0.62,
+            0.1046875,
+            0.89375
+          ],
+          [
+            0.68,
+            0.028125,
+            0.9734375
+          ]
+        ],
+        "lane": [
+          0.0,
+          1.0
+        ],
+        "near_center": 0.5031249999999999,
+        "far_center": 0.4953125000000001,
+        "lateral_error": -0.002853067047075545,
+        "heading_error": 0.03904264995516616,
+        "left_margin": 0.49714693295292445,
+        "right_margin": 0.5028530670470756,
+        "steering_hint": 0.027525132802934723,
+        "blue_boxes": []
+      },
+      "quality": {
+        "visible": true,
+        "yellow_fraction": 0.05134,
+        "texture": 12.92
+      },
+      "stripes": {
+        "start_line": {
+          "detected": false,
+          "bands": 0,
+          "white_fraction": 0.0,
+          "rect": [
+            32,
+            403,
+            608,
+            476
+          ]
+        },
+        "crosswalk": {
+          "detected": false,
+          "bands": 0,
+          "white_fraction": 0.1124,
+          "rect": [
+            32,
+            240,
+            628,
+            389
+          ]
+        }
+      },
+      "processing_ms": 3.127,
+      "training_label_valid": false
+    },
+    {
+      "image_path": "挡板30cm.jpg",
+      "sha256": "a1197a8e6a8f70e0f7a33f30312f7d674d5e6b7b2f1e6ce46413f85b990ba25d",
+      "image_size": [
+        640,
+        480
+      ],
+      "lane": {
+        "valid": false,
+        "confidence": 0.0,
+        "rows": [],
+        "blue_boxes": []
+      },
+      "quality": {
+        "visible": true,
+        "yellow_fraction": 7e-05,
+        "texture": 12.279
+      },
+      "stripes": {
+        "start_line": {
+          "detected": true,
+          "bands": 1,
+          "white_fraction": 0.4765,
+          "rect": [
+            32,
+            403,
+            608,
+            476
+          ]
+        },
+        "crosswalk": {
+          "detected": false,
+          "bands": 0,
+          "white_fraction": 0.0618,
+          "rect": [
+            32,
+            240,
+            628,
+            389
+          ]
+        }
+      },
+      "processing_ms": 2.017,
+      "training_label_valid": false
+    },
+    {
+      "image_path": "挡板60cm.jpg",
+      "sha256": "8bcce20757f432206ce095888ca63fc62315e46cbf0241240b3ecb982259f254",
+      "image_size": [
+        640,
+        480
+      ],
+      "lane": {
+        "valid": false,
+        "confidence": 0.2857142857142857,
+        "rows": [
+          [
+            0.56,
+            0.2125,
+            0.9015625
+          ],
+          [
+            0.62,
+            0.1515625,
+            0.9796875
+          ]
+        ],
+        "blue_boxes": []
+      },
+      "quality": {
+        "visible": true,
+        "yellow_fraction": 0.0319,
+        "texture": 10.527
+      },
+      "stripes": {
+        "start_line": {
+          "detected": true,
+          "bands": 1,
+          "white_fraction": 0.9688,
+          "rect": [
+            32,
+            403,
+            608,
+            476
+          ]
+        },
+        "crosswalk": {
+          "detected": true,
+          "bands": 4,
+          "white_fraction": 0.3423,
+          "rect": [
+            32,
+            240,
+            628,
+            389
+          ]
+        }
+      },
+      "processing_ms": 2.015,
+      "training_label_valid": false
+    },
+    {
+      "image_path": "检查-1141.jpg",
+      "sha256": "44d9ffbc0dc5c5c3e04edda97b1f0e1e4a0a2fe072bd2cb5f5613bb922f4b6ce",
+      "image_size": [
+        640,
+        480
+      ],
+      "lane": {
+        "valid": true,
+        "confidence": 0.42857142857142855,
+        "rows": [
+          [
+            0.5,
+            0.2921875,
+            0.8078125
+          ],
+          [
+            0.56,
+            0.2203125,
+            0.90625
+          ],
+          [
+            0.62,
+            0.1546875,
+            0.975
+          ]
+        ],
+        "lane": [
+          0.016145833333333304,
+          1.0
+        ],
+        "near_center": 0.5816406249999999,
+        "far_center": 0.5569010416666667,
+        "lateral_error": -0.07218512548929304,
+        "heading_error": 0.12307273847759648,
+        "left_margin": 0.42781487451070693,
+        "right_margin": 0.572185125489293,
+        "steering_hint": 0.004617527645996225,
+        "blue_boxes": []
+      },
+      "quality": {
+        "visible": true,
+        "yellow_fraction": 0.05332,
+        "texture": 11.527
+      },
+      "stripes": {
+        "start_line": {
+          "detected": true,
+          "bands": 1,
+          "white_fraction": 0.5013,
+          "rect": [
+            32,
+            403,
+            608,
+            476
+          ]
+        },
+        "crosswalk": {
+          "detected": false,
+          "bands": 0,
+          "white_fraction": 0.03,
+          "rect": [
+            32,
+            240,
+            628,
+            389
+          ]
+        }
+      },
+      "processing_ms": 3.099,
+      "training_label_valid": false
+    },
+    {
+      "image_path": "测距60cm准备.jpg",
+      "sha256": "94997e0dc5f02eef05e111b1072a00d2c72de4eebcac9eee31378885fe29e1bb",
+      "image_size": [
+        640,
+        480
+      ],
+      "lane": {
+        "valid": true,
+        "confidence": 0.42857142857142855,
+        "rows": [
+          [
+            0.5,
+            0.4109375,
+            0.8109375
+          ],
+          [
+            0.56,
+            0.2171875,
+            0.9109375
+          ],
+          [
+            0.62,
+            0.15,
+            0.9765625
+          ]
+        ],
+        "lane": [
+          0.0,
+          1.0
+        ],
+        "near_center": 0.5079427083333331,
+        "far_center": 0.5873697916666664,
+        "lateral_error": -0.0062054933875888355,
+        "heading_error": -0.3780344720347233,
+        "left_margin": 0.49379450661241114,
+        "right_margin": 0.5062054933875888,
+        "steering_hint": -0.31049471903164416,
+        "blue_boxes": []
+      },
+      "quality": {
+        "visible": true,
+        "yellow_fraction": 0.05117,
+        "texture": 22.492
+      },
+      "stripes": {
+        "start_line": {
+          "detected": true,
+          "bands": 1,
+          "white_fraction": 0.4914,
+          "rect": [
+            32,
+            403,
+            608,
+            476
+          ]
+        },
+        "crosswalk": {
+          "detected": false,
+          "bands": 1,
+          "white_fraction": 0.0953,
+          "rect": [
+            32,
+            240,
+            628,
+            389
+          ]
+        }
+      },
+      "processing_ms": 3.337,
+      "training_label_valid": false
+    },
+    {
+      "image_path": "测距前-1144.jpg",
+      "sha256": "97f35a385fa8775dce0f5cd652d298d8475c727cec9035ec43d36494f7002ea0",
+      "image_size": [
+        640,
+        480
+      ],
+      "lane": {
+        "valid": true,
+        "confidence": 0.42857142857142855,
+        "rows": [
+          [
+            0.5,
+            0.2921875,
+            0.809375
+          ],
+          [
+            0.56,
+            0.2140625,
+            0.9125
+          ],
+          [
+            0.62,
+            0.153125,
+            0.975
+          ]
+        ],
+        "lane": [
+          0.011197916666666918,
+          1.0
+        ],
+        "near_center": 0.5792968749999997,
+        "far_center": 0.5571614583333331,
+        "lateral_error": -0.06979142791657097,
+        "heading_error": 0.11022846601937653,
+        "left_margin": 0.430208572083429,
+        "right_margin": 0.569791427916571,
+        "steering_hint": -0.0025460834760410445,
+        "blue_boxes": []
+      },
+      "quality": {
+        "visible": true,
+        "yellow_fraction": 0.05124,
+        "texture": 12.037
+      },
+      "stripes": {
+        "start_line": {
+          "detected": true,
+          "bands": 1,
+          "white_fraction": 0.509,
+          "rect": [
+            32,
+            403,
+            608,
+            476
+          ]
+        },
+        "crosswalk": {
+          "detected": false,
+          "bands": 0,
+          "white_fraction": 0.0371,
+          "rect": [
+            32,
+            240,
+            628,
+            389
+          ]
+        }
+      },
+      "processing_ms": 3.287,
+      "training_label_valid": false
+    },
+    {
+      "image_path": "测距板-1146.jpg",
+      "sha256": "b2fa6f96d0ef4a97f47f8542b8e892355272b65a41c5b9ce25b046b9e92aefd8",
+      "image_size": [
+        640,
+        480
+      ],
+      "lane": {
+        "valid": false,
+        "confidence": 0.2857142857142857,
+        "rows": [
+          [
+            0.5,
+            0.3359375,
+            0.809375
+          ],
+          [
+            0.62,
+            0.15,
+            0.9765625
+          ]
+        ],
+        "blue_boxes": []
+      },
+      "quality": {
+        "visible": true,
+        "yellow_fraction": 0.04861,
+        "texture": 23.012
+      },
+      "stripes": {
+        "start_line": {
+          "detected": true,
+          "bands": 1,
+          "white_fraction": 0.4711,
+          "rect": [
+            32,
+            403,
+            608,
+            476
+          ]
+        },
+        "crosswalk": {
+          "detected": false,
+          "bands": 1,
+          "white_fraction": 0.1368,
+          "rect": [
+            32,
+            240,
+            628,
+            389
+          ]
+        }
+      },
+      "processing_ms": 2.143,
+      "training_label_valid": false
+    },
+    {
+      "image_path": "起点-1139.jpg",
+      "sha256": "38f485eb7c6b502d943d9f50d7379c75a64a5bdfce1fcfd56561a07f126ff06d",
+      "image_size": [
+        640,
+        480
+      ],
+      "lane": {
+        "valid": true,
+        "confidence": 0.42857142857142855,
+        "rows": [
+          [
+            0.5,
+            0.29375,
+            0.8078125
+          ],
+          [
+            0.56,
+            0.221875,
+            0.9109375
+          ],
+          [
+            0.62,
+            0.1546875,
+            0.975
+          ]
+        ],
+        "lane": [
+          0.014843749999999933,
+          1.0
+        ],
+        "near_center": 0.5817708333333329,
+        "far_center": 0.5583333333333332,
+        "lateral_error": -0.07211759301791422,
+        "heading_error": 0.11665543544106771,
+        "left_margin": 0.4278824069820857,
+        "right_margin": 0.5721175930179142,
+        "steering_hint": -0.0004285225704343115,
+        "blue_boxes": []
+      },
+      "quality": {
+        "visible": true,
+        "yellow_fraction": 0.053,
+        "texture": 11.219
+      },
+      "stripes": {
+        "start_line": {
+          "detected": true,
+          "bands": 1,
+          "white_fraction": 0.5003,
+          "rect": [
+            32,
+            403,
+            608,
+            476
+          ]
+        },
+        "crosswalk": {
+          "detected": false,
+          "bands": 0,
+          "white_fraction": 0.0288,
+          "rect": [
+            32,
+            240,
+            628,
+            389
+          ]
+        }
+      },
+      "processing_ms": 3.427,
+      "training_label_valid": false
+    },
+    {
+      "image_path": "起点后退20cm.jpg",
+      "sha256": "0607ff61c04f46b62338d6ded401f9902375b6c019cab3372ac9e012b7c68ba3",
+      "image_size": [
+        640,
+        480
+      ],
+      "lane": {
+        "valid": true,
+        "confidence": 0.42857142857142855,
+        "rows": [
+          [
+            0.5,
+            0.2703125,
+            0.78125
+          ],
+          [
+            0.56,
+            0.1984375,
+            0.8734375
+          ],
+          [
+            0.62,
+            0.140625,
+            0.9546875
+          ]
+        ],
+        "lane": [
+          0.008593749999999845,
+          1.0
+        ],
+        "near_center": 0.5692708333333332,
+        "far_center": 0.5328124999999999,
+        "lateral_error": -0.06177426846261018,
+        "heading_error": 0.1803117949024635,
+        "left_margin": 0.4382257315373899,
+        "right_margin": 0.5617742684626101,
+        "steering_hint": 0.06394288692057755,
+        "blue_boxes": []
+      },
+      "quality": {
+        "visible": true,
+        "yellow_fraction": 0.05296,
+        "texture": 12.831
+      },
+      "stripes": {
+        "start_line": {
+          "detected": true,
+          "bands": 1,
+          "white_fraction": 0.8928,
+          "rect": [
+            32,
+            403,
+            608,
+            476
+          ]
+        },
+        "crosswalk": {
+          "detected": false,
+          "bands": 0,
+          "white_fraction": 0.0529,
+          "rect": [
+            32,
+            240,
+            628,
+            389
+          ]
+        }
+      },
+      "processing_ms": 3.367,
+      "training_label_valid": false
+    },
+    {
+      "image_path": "起点后退待核对.jpg",
+      "sha256": "647dc6ce64fa70717814bf6187ef3368e1b2f25d0a1a0ef7ccd4430ccd92f1c2",
+      "image_size": [
+        640,
+        480
+      ],
+      "lane": {
+        "valid": true,
+        "confidence": 0.42857142857142855,
+        "rows": [
+          [
+            0.5,
+            0.25,
+            0.75
+          ],
+          [
+            0.56,
+            0.1828125,
+            0.825
+          ],
+          [
+            0.62,
+            0.1109375,
+            0.90625
+          ]
+        ],
+        "lane": [
+          0.0,
+          1.0
+        ],
+        "near_center": 0.5170572916666665,
+        "far_center": 0.5027343750000001,
+        "lateral_error": -0.015666108586462398,
+        "heading_error": 0.07149253001867177,
+        "left_margin": 0.4843338914135375,
+        "right_margin": 0.5156661085864624,
+        "steering_hint": 0.036828082852536304,
+        "blue_boxes": []
+      },
+      "quality": {
+        "visible": true,
+        "yellow_fraction": 0.05094,
+        "texture": 16.338
+      },
+      "stripes": {
+        "start_line": {
+          "detected": false,
+          "bands": 0,
+          "white_fraction": 0.0883,
+          "rect": [
+            32,
+            403,
+            608,
+            476
+          ]
+        },
+        "crosswalk": {
+          "detected": false,
+          "bands": 0,
+          "white_fraction": 0.0791,
+          "rect": [
+            32,
+            240,
+            628,
+            389
+          ]
+        }
+      },
+      "processing_ms": 3.315,
+      "training_label_valid": false
+    }
+  ]
+}

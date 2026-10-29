@@ -180,9 +180,26 @@ def parse_steering(raw):
     return result
 
 def parse_control(raw):
-    if len(raw)>4096:raise ValueError('control diagnostics too large')
+    if len(raw)>16384:raise ValueError('control diagnostics too large')
     def reject_constant(value):raise ValueError('non-finite JSON value')
     value=json.loads(raw,parse_constant=reject_constant)
+    if isinstance(value,dict) and value.get('source')=='supervised_visual_test':
+        if (value.get('supervised') is not True or value.get('calibrated') is not False
+                or not isinstance(value.get('active'),bool) or value.get('phase') not in ('waiting','follow','yield','done','fault')
+                or not isinstance(value.get('reason'),str) or not 1<=len(value['reason'])<=200):
+            raise ValueError('invalid supervised trial state')
+        for name in ('distance_m','elapsed_seconds','frame_age_s','feedback_age_s'):
+            n=value.get(name)
+            if n is not None and (not isinstance(n,(int,float)) or isinstance(n,bool) or not math.isfinite(n) or n<0):
+                raise ValueError('invalid supervised trial measurement')
+        command=value.get('command')
+        if (not isinstance(command,list) or len(command)!=3
+                or any(not isinstance(n,(int,float)) or isinstance(n,bool) or not math.isfinite(n) for n in command)
+                or not 0<=command[0]<=.200001 or abs(command[1])>.000001 or abs(command[2])>.650001):
+            raise ValueError('invalid supervised trial command')
+        return {k:value.get(k) for k in ('source','active','phase','reason','supervised','calibrated','laps','crosswalk_stops',
+                'distance_m','elapsed_seconds','frame_age_s','feedback_age_s','command','measured_velocity','pose','origin',
+                'start_line','crosswalk','view_quality','session','start_anchor','lane_geometry','route_proposal','visual_route_active')}
     reasons=('waiting','disabled','ready','estop_latched_or_stale','odometry_stale',
              'odometry_limit','stop_not_confirmed','safety_mission_or_command_stop')
     if (not isinstance(value,dict) or value.get('source')!='control_gate'

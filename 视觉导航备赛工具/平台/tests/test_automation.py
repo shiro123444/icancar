@@ -257,6 +257,9 @@ class DetectorTests(unittest.TestCase):
         result=predictions(output,640,480)
         self.assertEqual([item['label'] for item in result],['start','crossing'])
         self.assertEqual(result[1]['score'],.72)
+        mapped=predictions(output,640,480,class_names=['start','crossing'])
+        self.assertEqual([x['label'] for x in mapped],['crossing','start'])
+        self.assertEqual([x['class_id'] for x in mapped],[1,0])
 
 
 if __name__ == '__main__':

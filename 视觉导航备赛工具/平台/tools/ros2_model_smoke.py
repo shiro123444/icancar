@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Isolated ROS 2 replay of two laps using synthetic crosswalk-model messages."""
 import io
+import argparse
 import json
 import os
 import subprocess
@@ -13,6 +14,11 @@ from pathlib import Path
 def main():
     if os.environ.get('ROS_DOMAIN_ID') != '78' or os.environ.get('ROS_LOCALHOST_ONLY') != '1':
         raise SystemExit('仅允许在本机隔离 ROS 2 域 78 中运行')
+    parser=argparse.ArgumentParser(description='隔离域中的两圈任务回放；可选使用现场照片与真实模型')
+    parser.add_argument('--site-images',type=Path)
+    parser.add_argument('--real-model',type=Path)
+    args=parser.parse_args()
+    if bool(args.site_images)!=bool(args.real_model):parser.error('现场照片与真实模型路径需同时指定')
     from PIL import Image, ImageDraw
     import rclpy
     from rclpy.node import Node
@@ -28,10 +34,14 @@ def main():
         if line: ImageDraw.Draw(picture).rectangle((70,395,570,420),fill='white')
         out=io.BytesIO();picture.save(out,format='JPEG');return out.getvalue()
     scenes={'clear':jpeg(False),'line':jpeg(True)}
+    if args.site_images:
+        scenes={key:(args.site_images/name).read_bytes() for key,name in
+                [('clear','回起点复核.jpg'),('line','起点后退20cm.jpg'),('crosswalk','人行道前50cm.jpg')]}
+        if not all(x.startswith(b'\xff\xd8') for x in scenes.values()):raise SystemExit('现场参考照片不是 JPEG')
     with tempfile.TemporaryDirectory(prefix='visual-race-model-smoke-') as tmp:
         folder=Path(tmp)
-        stripe=json.loads((root/'data/perception.example.json').read_text(encoding='utf-8'))
-        model=json.loads((root/'data/crosswalk-model.example.json').read_text(encoding='utf-8'))
+        stripe=json.loads((root/'data'/('perception.site-review.json' if args.site_images else 'perception.example.json')).read_text(encoding='utf-8'))
+        model=json.loads((root/'data'/('crosswalk-model.site-review.json' if args.site_images else 'crosswalk-model.example.json')).read_text(encoding='utf-8'))
         stripe['calibrated']=model['calibrated']=True  # Only in this disposable synthetic test.
         stripe_path,model_path=folder/'stripe.json',folder/'model.json'
         stripe_path.write_text(json.dumps(stripe),encoding='utf-8')
@@ -43,6 +53,11 @@ def main():
              '--speech-ack-topic','/trial/model_speech_ack']
         with tempfile.TemporaryFile(mode='w+t') as log:
             child=subprocess.Popen(cmd,stdout=log,stderr=subprocess.STDOUT)
+            model_child=None
+            if args.real_model:
+                model_child=subprocess.Popen([sys.executable,str(root/'ros2/openvino_preview.py'),'--model',str(args.real_model.resolve()),
+                    '--model-config',str(model_path),'--camera-topic','/trial/model_camera','--output-topic','/trial/model_results'],
+                    stdout=log,stderr=subprocess.STDOUT)
             rclpy.init()
             class Trial(Node):
                 def __init__(self):
@@ -74,10 +89,11 @@ def main():
                 def tick(self):
                     stamp=self.get_clock().now().to_msg()
                     stamp_ns=stamp.sec*1_000_000_000+stamp.nanosec
-                    image=CompressedImage();image.header.stamp=stamp;image.format='jpeg';image.data=scenes[self.scene]
+                    image=CompressedImage();image.header.stamp=stamp;image.format='jpeg'
+                    image.data=scenes['crosswalk'] if args.site_images and self.crosswalk else scenes[self.scene]
                     odom=Odometry();odom.header.stamp=stamp;odom.pose.pose.orientation.w=1.0
                     self.camera.publish(image);self.odom.publish(odom)
-                    if self.model_enabled:
+                    if self.model_enabled and model_child is None:
                         boxes=([{'label':'crossing','score':.9,'box':[200,120,420,360]}] if self.crosswalk else [])
                         value={'source':'openvino_race','valid':True,'stamp_ns':stamp_ns,'width':640,'height':480,
                                'inference_ms':1,'detections':boxes}
@@ -115,10 +131,13 @@ def main():
                         if not response.success:self.finish={'error':'reset rejected: '+response.message}
                         else:self.change('warmup_loss')
                     elif self.stage=='start_loss' and s.get('phase')=='running':
-                        self.model_enabled=False;self.change('model_loss')
+                        self.model_enabled=False
+                        if model_child is not None:model_child.terminate()
+                        self.change('model_loss')
                     elif self.stage=='model_loss' and s.get('phase')=='fault':
                         self.finish=({'two_laps':True,'crosswalk_stops':2,'model_loss_stop':True,
-                                      'simulated_model_and_feedback':True,'physical_commands':False}
+                                      'recorded_site_images':bool(args.site_images),'real_openvino_model':bool(args.real_model),
+                                      'simulated_model':not bool(args.real_model),'simulated_odometry_and_speech_ack':True,'physical_commands':False}
                                      if s.get('reason')=='crosswalk_model_unavailable'
                                      else {'error':'unexpected fault: '+str(s.get('reason'))})
                     elif s.get('phase')=='fault' and self.stage!='model_loss':
@@ -139,6 +158,10 @@ def main():
                 rclpy.shutdown();child.terminate()
                 try:child.wait(timeout=5)
                 except subprocess.TimeoutExpired:child.kill();child.wait()
+                if model_child is not None:
+                    model_child.terminate()
+                    try:model_child.wait(timeout=5)
+                    except subprocess.TimeoutExpired:model_child.kill();model_child.wait()
 
 
 if __name__=='__main__':main()
