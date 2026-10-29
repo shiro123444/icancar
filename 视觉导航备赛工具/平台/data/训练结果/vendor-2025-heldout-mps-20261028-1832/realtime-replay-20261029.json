@@ -1,0 +1,35 @@
+{
+  "checks": {
+    "started": true,
+    "safety_stop": true,
+    "safety_resumed": true,
+    "estop_stop": true,
+    "estop_held": true,
+    "reset_resumed": true,
+    "stale_stop": true
+  },
+  "all_passed": true,
+  "observations": {
+    "started": 34,
+    "safety_stop": 15,
+    "safety_resumed": 12,
+    "estop_stop": 10,
+    "estop_held": 15,
+    "reset_resumed": 17,
+    "stale_stop": 26
+  },
+  "worker": {
+    "submitted": 29,
+    "processed": 17,
+    "input_replaced": 12,
+    "result_replaced": 0,
+    "errors": 0,
+    "pending": 0,
+    "result_pending": 0,
+    "closed": true
+  },
+  "worker_closed": true,
+  "physical_motor_commands": false,
+  "source": "historical images and simulated feedback",
+  "note": "In-process replay, not a ROS 2 or physical-vehicle test."
+}

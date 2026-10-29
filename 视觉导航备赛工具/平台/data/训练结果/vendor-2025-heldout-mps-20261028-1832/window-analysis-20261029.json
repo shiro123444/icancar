@@ -1,0 +1,20 @@
+{
+  "samples": 274,
+  "sample_step": 2,
+  "window_ms": 250,
+  "weighting": "increasing toward newest",
+  "max_angular_for_analysis": 100,
+  "results": {
+    "unfiltered": {
+      "mse": 0.11515663176836244,
+      "mae": 0.23714737144861994,
+      "mean_abs_step": 0.15414297347376635
+    },
+    "window_250ms": {
+      "mse": 0.11367351491135982,
+      "mae": 0.23442262623728843,
+      "mean_abs_step": 0.13334312638829626
+    }
+  },
+  "note": "Same historical recording, offline labels of unverified physical units. This does not measure real vehicle performance or stopping distance."
+}

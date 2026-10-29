@@ -1,0 +1,31 @@
+{
+  "calibrated": false,
+  "start_line": {
+    "roi": [
+      0.03,
+      0.49,
+      0.97,
+      0.63
+    ],
+    "axis": "y",
+    "white_threshold": 0.7,
+    "min_coverage": 0.65,
+    "min_band_fraction": 0.03,
+    "min_bands": 1,
+    "max_bands": 1
+  },
+  "crosswalk": {
+    "roi": [
+      0.02,
+      0.5,
+      0.98,
+      0.62
+    ],
+    "axis": "x",
+    "white_threshold": 0.75,
+    "min_coverage": 0.3,
+    "min_band_fraction": 0.02,
+    "min_bands": 3,
+    "max_bands": 12
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "format": "DEEPBOT 2025 AutoPilot state_dict",
+  "train_samples": 1746,
+  "validation_samples": 380,
+  "label": "steering; the currently installed vendor collector uses /odom twist.angular.z, but this historical capture version is unverified",
+  "dataset_source": "2025 DEEPBOT vendor driving dataset",
+  "input": "RGB 160x120, ImageNet mean and std",
+  "seed": 2026,
+  "epochs": 1,
+  "batch_size": 64,
+  "learning_rate": 0.001,
+  "train_csv_sha256": "346e8a9f56316567aadaea162315f07dd41781c06c16d51a19848493cc4901a7",
+  "validation_csv_sha256": "5d86e30bce05ea20003e7abe89a509217fa79351a7bd8e2f58eb19e274ed168f",
+  "torch_version": "2.8.0",
+  "device": "mps",
+  "gpu": "Apple Metal",
+  "baseline": {
+    "predict_zero_mse": 0.42078788460526284,
+    "predict_train_mean_mse": 0.42084197558844455
+  },
+  "note": "A time-separated segment of one recording does not substitute for an independent real-track test.",
+  "test_samples": 547,
+  "test_csv_sha256": "46783b30e0d063778bf2e42550cce59d8865770516596fe54d9b2f194e15fca1",
+  "best_epoch": 1,
+  "best_validation_mse": 0.10746968482670032,
+  "model_sha256": "89ed064c0c0ccd4bbc4132a54359920e8b4cedac8f01f2ecd9aee0fe98f0f34f"
+}

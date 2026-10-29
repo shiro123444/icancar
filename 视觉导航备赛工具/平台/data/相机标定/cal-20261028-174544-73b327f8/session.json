@@ -1,0 +1,274 @@
+{
+  "id": "cal-20261028-174544-73b327f8",
+  "created_at": "2026-10-28T17:45:44+08:00",
+  "board": {
+    "cols": 8,
+    "rows": 6,
+    "square_mm": 20.0
+  },
+  "revision": 18,
+  "photos": [
+    {
+      "file": "photo-0001.jpg",
+      "captured_at": "2026-10-28T17:31:04+08:00",
+      "source": "vehicle_capture",
+      "enabled": true,
+      "detected": true,
+      "dimensions": [
+        640,
+        480
+      ],
+      "saved_at": "2026-10-28T17:45:44+08:00",
+      "captured_at_source": "vehicle_file_mtime"
+    },
+    {
+      "file": "photo-0002.jpg",
+      "captured_at": "2026-10-28T17:32:06+08:00",
+      "source": "vehicle_capture",
+      "enabled": true,
+      "detected": true,
+      "dimensions": [
+        640,
+        480
+      ],
+      "saved_at": "2026-10-28T17:45:44+08:00",
+      "captured_at_source": "vehicle_file_mtime"
+    },
+    {
+      "file": "photo-0003.jpg",
+      "captured_at": "2026-10-28T17:32:32+08:00",
+      "source": "vehicle_capture",
+      "enabled": true,
+      "detected": true,
+      "dimensions": [
+        640,
+        480
+      ],
+      "saved_at": "2026-10-28T17:45:45+08:00",
+      "captured_at_source": "vehicle_file_mtime"
+    },
+    {
+      "file": "photo-0004.jpg",
+      "captured_at": "2026-10-28T17:32:35+08:00",
+      "source": "vehicle_capture",
+      "enabled": true,
+      "detected": true,
+      "dimensions": [
+        640,
+        480
+      ],
+      "saved_at": "2026-10-28T17:45:45+08:00",
+      "captured_at_source": "vehicle_file_mtime"
+    },
+    {
+      "file": "photo-0005.jpg",
+      "captured_at": "2026-10-28T17:32:46+08:00",
+      "source": "vehicle_capture",
+      "enabled": true,
+      "detected": true,
+      "dimensions": [
+        640,
+        480
+      ],
+      "saved_at": "2026-10-28T17:45:45+08:00",
+      "captured_at_source": "vehicle_file_mtime"
+    },
+    {
+      "file": "photo-0006.jpg",
+      "captured_at": "2026-10-28T17:32:46+08:00",
+      "source": "vehicle_capture",
+      "enabled": true,
+      "detected": true,
+      "dimensions": [
+        640,
+        480
+      ],
+      "saved_at": "2026-10-28T17:45:45+08:00",
+      "captured_at_source": "vehicle_file_mtime"
+    },
+    {
+      "file": "photo-0007.jpg",
+      "captured_at": "2026-10-28T17:32:48+08:00",
+      "source": "vehicle_capture",
+      "enabled": true,
+      "detected": true,
+      "dimensions": [
+        640,
+        480
+      ],
+      "saved_at": "2026-10-28T17:45:45+08:00",
+      "captured_at_source": "vehicle_file_mtime"
+    },
+    {
+      "file": "photo-0008.jpg",
+      "captured_at": "2026-10-28T17:33:31+08:00",
+      "source": "vehicle_capture",
+      "enabled": true,
+      "detected": true,
+      "dimensions": [
+        640,
+        480
+      ],
+      "saved_at": "2026-10-28T17:45:45+08:00",
+      "captured_at_source": "vehicle_file_mtime"
+    },
+    {
+      "file": "photo-0009.jpg",
+      "captured_at": "2026-10-28T17:33:32+08:00",
+      "source": "vehicle_capture",
+      "enabled": true,
+      "detected": true,
+      "dimensions": [
+        640,
+        480
+      ],
+      "saved_at": "2026-10-28T17:45:45+08:00",
+      "captured_at_source": "vehicle_file_mtime"
+    },
+    {
+      "file": "photo-0010.jpg",
+      "captured_at": "2026-10-28T17:34:08+08:00",
+      "source": "vehicle_capture",
+      "enabled": true,
+      "detected": true,
+      "dimensions": [
+        640,
+        480
+      ],
+      "saved_at": "2026-10-28T17:45:45+08:00",
+      "captured_at_source": "vehicle_file_mtime"
+    },
+    {
+      "file": "photo-0011.jpg",
+      "captured_at": "2026-10-28T17:34:17+08:00",
+      "source": "vehicle_capture",
+      "enabled": true,
+      "detected": true,
+      "dimensions": [
+        640,
+        480
+      ],
+      "saved_at": "2026-10-28T17:45:45+08:00",
+      "captured_at_source": "vehicle_file_mtime"
+    },
+    {
+      "file": "photo-0012.jpg",
+      "captured_at": "2026-10-28T17:34:19+08:00",
+      "source": "vehicle_capture",
+      "enabled": true,
+      "detected": true,
+      "dimensions": [
+        640,
+        480
+      ],
+      "saved_at": "2026-10-28T17:45:45+08:00",
+      "captured_at_source": "vehicle_file_mtime"
+    },
+    {
+      "file": "photo-0013.jpg",
+      "captured_at": "2026-10-28T17:34:54+08:00",
+      "source": "vehicle_capture",
+      "enabled": true,
+      "detected": true,
+      "dimensions": [
+        640,
+        480
+      ],
+      "saved_at": "2026-10-28T17:45:46+08:00",
+      "captured_at_source": "vehicle_file_mtime"
+    },
+    {
+      "file": "photo-0014.jpg",
+      "captured_at": "2026-10-28T17:35:01+08:00",
+      "source": "vehicle_capture",
+      "enabled": true,
+      "detected": true,
+      "dimensions": [
+        640,
+        480
+      ],
+      "saved_at": "2026-10-28T17:45:46+08:00",
+      "captured_at_source": "vehicle_file_mtime"
+    },
+    {
+      "file": "photo-0015.jpg",
+      "captured_at": "2026-10-28T17:35:17+08:00",
+      "source": "vehicle_capture",
+      "enabled": true,
+      "detected": true,
+      "dimensions": [
+        640,
+        480
+      ],
+      "saved_at": "2026-10-28T17:45:46+08:00",
+      "captured_at_source": "vehicle_file_mtime"
+    },
+    {
+      "file": "photo-0016.jpg",
+      "captured_at": "2026-10-28T17:35:17+08:00",
+      "source": "vehicle_capture",
+      "enabled": true,
+      "detected": true,
+      "dimensions": [
+        640,
+        480
+      ],
+      "saved_at": "2026-10-28T17:45:46+08:00",
+      "captured_at_source": "vehicle_file_mtime"
+    },
+    {
+      "file": "photo-0017.jpg",
+      "captured_at": "2026-10-28T17:35:18+08:00",
+      "source": "vehicle_capture",
+      "enabled": true,
+      "detected": true,
+      "dimensions": [
+        640,
+        480
+      ],
+      "saved_at": "2026-10-28T17:45:46+08:00",
+      "captured_at_source": "vehicle_file_mtime"
+    },
+    {
+      "file": "photo-0018.jpg",
+      "captured_at": "2026-10-28T17:35:19+08:00",
+      "source": "vehicle_capture",
+      "enabled": true,
+      "detected": true,
+      "dimensions": [
+        640,
+        480
+      ],
+      "saved_at": "2026-10-28T17:45:46+08:00",
+      "captured_at_source": "vehicle_file_mtime"
+    }
+  ],
+  "results": [
+    {
+      "ok": true,
+      "file": "camera-intrinsics-20261028-174546-5b1bab45.yaml",
+      "rms_px": 0.448,
+      "sample_count": 16,
+      "skipped": [
+        {
+          "file": "photo-0002.jpg",
+          "reason": "画面偏差较大",
+          "initial_rms_px": 4.745904445648193
+        },
+        {
+          "file": "photo-0013.jpg",
+          "reason": "画面偏差较大",
+          "initial_rms_px": 2.331320285797119
+        }
+      ],
+      "center_span": [
+        0.6194789891441663,
+        0.6291030397845639
+      ],
+      "quality": "ok",
+      "quality_notes": [],
+      "input_revision": 18,
+      "created_at": "2026-10-28T17:45:46+08:00"
+    }
+  ]
+}

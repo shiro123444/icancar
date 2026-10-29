@@ -1,0 +1,26 @@
+{
+  "samples": 274,
+  "sample_step": 2,
+  "median_interval_ms": 200.0,
+  "window_ms": 250,
+  "max_angular_for_analysis": 100,
+  "results": {
+    "unfiltered": {
+      "mse": 0.11515663176836244,
+      "mae": 0.23714737144861994,
+      "absolute_error_p95": 0.7600252435684204,
+      "mean_abs_step": 0.15414297347376635,
+      "strong_label_samples": 148,
+      "strong_label_sign_disagreements": 2
+    },
+    "window": {
+      "mse": 0.11367351491135982,
+      "mae": 0.23442262623728843,
+      "absolute_error_p95": 0.7647607059478759,
+      "mean_abs_step": 0.13334312638829626,
+      "strong_label_samples": 148,
+      "strong_label_sign_disagreements": 1
+    }
+  },
+  "note": "Same historical recording; label units are unverified. Angular limit 100 isolates smoothing and is not a vehicle setting."
+}

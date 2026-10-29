@@ -1,0 +1,2 @@
+# Preserve recorded dataset bytes and their SHA-256 values across platforms.
+*.csv -text whitespace=cr-at-eol

@@ -1,0 +1,29 @@
+# Local environment and machine-specific files
+.DS_Store
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv*/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+id_rsa
+id_ed25519
+
+# Downloaded vendor images, videos, firmware and tools stay on this machine.
+/2025年视觉导航工控机版本/
+/二、DEEPBOT的视觉/
+/驱动板源码与PDF原理图文件/
+/DEEPBOT 使用文档_V1.4_1008*.pdf
+/deepbot升级软件与固件.zip
+/rescuezilla-*.iso
+/rescuezilla系统备份方法.zip
+
+# Large reference image copies and reproducible distribution archives.
+/视觉导航备赛工具/平台/data/参考训练集/*.tar.gz
+/视觉导航备赛工具/平台/data/参考训练集/train_data/*.jpg
+/视觉导航备赛工具/平台/data/参考训练集/vendor-*/images/
+/视觉导航备赛工具/平台/data/训练结果/*.tar.gz
+/视觉导航备赛工具/平台/data/部署包/

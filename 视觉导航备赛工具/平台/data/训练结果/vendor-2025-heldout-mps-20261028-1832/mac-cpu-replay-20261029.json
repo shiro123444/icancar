@@ -1,0 +1,36 @@
+{
+  "samples": 547,
+  "dataset": "/Users/july/ican/视觉导航/视觉导航备赛工具/平台/data/参考训练集/vendor-2025-heldout",
+  "manifest": "test.csv",
+  "model": "/Users/july/ican/视觉导航/视觉导航备赛工具/平台/data/训练结果/vendor-2025-heldout-mps-20261028-1832/autopilot.pth",
+  "device": "local CPU",
+  "threads": 2,
+  "mean_absolute_error": 0.2392833430876734,
+  "mean_squared_error": 0.11679602819230002,
+  "absolute_error_p95": 0.7512305636405945,
+  "label_bands": {
+    "abs_lt_0.2": {
+      "samples": 254,
+      "mae": 0.21822499979222854
+    },
+    "abs_0.2_to_0.5": {
+      "samples": 54,
+      "mae": 0.3485277852150025
+    },
+    "abs_ge_0.5": {
+      "samples": 239,
+      "mae": 0.2369804950632685
+    }
+  },
+  "strong_label_samples": 293,
+  "strong_label_sign_disagreements": 3,
+  "model_only_ms": {
+    "p50": 0.5300420000000639,
+    "p95": 0.589541999999943
+  },
+  "jpeg_decode_preprocess_and_infer_ms": {
+    "p50": 0.9514159999999272,
+    "p95": 1.0589589999998594
+  },
+  "note": "Offline CPU replay; excludes camera, ROS, network and vehicle response. Same-recording tests do not prove track performance."
+}

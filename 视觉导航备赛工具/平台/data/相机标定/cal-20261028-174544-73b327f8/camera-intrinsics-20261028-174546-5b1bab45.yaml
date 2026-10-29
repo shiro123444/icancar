@@ -1,0 +1,112 @@
+image_width: 640
+image_height: 480
+camera_name: visual_race_camera
+distortion_model: plumb_bob
+camera_matrix:
+  rows: 3
+  cols: 3
+  data:
+  - 494.4656833167819
+  - 0.0
+  - 348.945223600899
+  - 0.0
+  - 493.3987988347962
+  - 246.3142140454532
+  - 0.0
+  - 0.0
+  - 1.0
+distortion_coefficients:
+  rows: 1
+  cols: 5
+  data:
+  - 0.07644837838037273
+  - -0.11365700428188406
+  - -0.0022831887589052453
+  - 0.019452934604553215
+  - 0.0
+rectification_matrix:
+  rows: 3
+  cols: 3
+  data:
+  - 1.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 1.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 1.0
+projection_matrix:
+  rows: 3
+  cols: 4
+  data:
+  - 485.32678525883927
+  - 0.0
+  - 366.6929878780803
+  - 0.0
+  - 0.0
+  - 471.79134811996175
+  - 245.10621162776624
+  - 0.0
+  - 0.0
+  - 0.0
+  - 1.0
+  - 0.0
+reprojection_rms_px: 0.44849795690202293
+sample_count: 16
+per_view_rms_px:
+- 0.4144628643989563
+- 0.3941493630409241
+- 0.23723720014095306
+- 0.2086803913116455
+- 0.30068403482437134
+- 0.3048434257507324
+- 0.3156968057155609
+- 0.23521140217781067
+- 0.27709051966667175
+- 0.5244688391685486
+- 0.6055578589439392
+- 0.4986764192581177
+- 0.45531460642814636
+- 0.5554954409599304
+- 0.8243488073348999
+- 0.5389350056648254
+sample_files:
+- photo-0001.jpg
+- photo-0003.jpg
+- photo-0004.jpg
+- photo-0005.jpg
+- photo-0006.jpg
+- photo-0007.jpg
+- photo-0008.jpg
+- photo-0009.jpg
+- photo-0010.jpg
+- photo-0011.jpg
+- photo-0012.jpg
+- photo-0014.jpg
+- photo-0015.jpg
+- photo-0016.jpg
+- photo-0017.jpg
+- photo-0018.jpg
+excluded_samples:
+- file: photo-0002.jpg
+  reason: 画面偏差较大
+  initial_rms_px: 4.745904445648193
+- file: photo-0013.jpg
+  reason: 画面偏差较大
+  initial_rms_px: 2.331320285797119
+board:
+  inner_corners:
+  - 8
+  - 6
+  square_size_m: 0.02
+center_span:
+- 0.6194789891441663
+- 0.6291030397845639
+calibration_flags:
+- fix_k3
+quality: ok
+quality_notes: []
+session_id: cal-20261028-174544-73b327f8
+input_revision: 18

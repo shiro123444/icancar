@@ -1,0 +1,21 @@
+{
+  "source": "2025 DEEPBOT vendor driving dataset",
+  "source_csv_sha256": "1d205bcbba831eb5b8e5f81350f89d9f3d94469871476e1d88ff3e8caa47fc38",
+  "samples": 2733,
+  "training_samples": 1746,
+  "validation_samples": 380,
+  "test_samples": 547,
+  "gap_samples": 60,
+  "image_size_wh": [
+    224,
+    224
+  ],
+  "first_timestamp_ms": 1740705048676,
+  "last_timestamp_ms": 1740705322876,
+  "split": "chronological",
+  "validation_fraction": 0.15,
+  "test_fraction": 0.2,
+  "gap_seconds": 3.0,
+  "label": "steering; the currently installed vendor collector uses /odom twist.angular.z, but this historical capture version is unverified",
+  "note": "Same venue/recording sequence; validation is not an independent field test. Historical 224x224 images differ from the current collector output size."
+}

@@ -1,0 +1,8 @@
+{
+  "mae": 0.25071194402914376,
+  "mse": 0.1102978714641313,
+  "samples": 547,
+  "predict_zero_mse": 0.42917250422303466,
+  "predict_train_mean_mse": 0.4294932867298057,
+  "note": "Held-out data must be assessed against its source; no real-track guarantee."
+}

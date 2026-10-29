@@ -1,0 +1,7 @@
+topics:
+  - topic: /camera/rgb/image_raw/compressed
+    type: sensor_msgs/msg/CompressedImage
+    queue_size: 1
+  - topic: /raw_odom
+    type: nav_msgs/msg/Odometry
+    queue_size: 1

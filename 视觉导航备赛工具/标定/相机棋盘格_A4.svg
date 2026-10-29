@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="210mm" height="297mm" viewBox="0 0 210 297">
+  <title>相机标定棋盘格：8×6 内角点，方格边长 20 毫米</title>
+  <defs>
+    <pattern id="checker" x="15" y="70" width="40" height="40" patternUnits="userSpaceOnUse">
+      <rect width="40" height="40" fill="white"/>
+      <rect width="20" height="20" fill="black"/>
+      <rect x="20" y="20" width="20" height="20" fill="black"/>
+    </pattern>
+  </defs>
+  <rect width="210" height="297" fill="white"/>
+  <text x="105" y="57" text-anchor="middle" font-family="sans-serif" font-size="4">相机标定 · 8×6 内角点 · 方格 20 mm · 原比例打印</text>
+  <rect x="15" y="70" width="180" height="140" fill="url(#checker)"/>
+  <path d="M95 230h20 M95 227v6 M115 227v6" stroke="black" stroke-width="0.4"/>
+  <text x="105" y="239" text-anchor="middle" font-family="sans-serif" font-size="4">20 mm</text>
+</svg>

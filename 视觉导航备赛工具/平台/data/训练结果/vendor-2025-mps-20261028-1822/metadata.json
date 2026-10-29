@@ -1,0 +1,24 @@
+{
+  "format": "DEEPBOT 2025 AutoPilot state_dict",
+  "train_samples": 2156,
+  "validation_samples": 547,
+  "label": "steering; historical capture source unverified",
+  "input": "RGB 160x120, ImageNet mean and std",
+  "seed": 2026,
+  "epochs": 20,
+  "batch_size": 64,
+  "learning_rate": 0.001,
+  "train_csv_sha256": "d0a3b9a75346f3a229d3c877102d0770be658533bea95bd8bb6befd8c94eed11",
+  "validation_csv_sha256": "46783b30e0d063778bf2e42550cce59d8865770516596fe54d9b2f194e15fca1",
+  "torch_version": "2.8.0",
+  "device": "mps",
+  "gpu": "Apple Metal",
+  "baseline": {
+    "predict_zero_mse": 0.42917250422303466,
+    "predict_train_mean_mse": 0.4292325979060386
+  },
+  "note": "Validation is a time-separated section of the same old recording, not an independent real-track test.",
+  "best_epoch": 3,
+  "best_validation_mse": 0.0985954646872428,
+  "model_sha256": "59c7ab81c952f83039c7863215da137cb4eff7b46bd145c50e58ed3bd77bcd65"
+}
